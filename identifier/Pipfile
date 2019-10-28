@@ -4,6 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+Flask = "*"
+marshmallow = "*"
+face_recognition = "*"
 
 [dev-packages]
 
