@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 Flask = "*"
 marshmallow = "*"
-face_recognition = "*"
+face-recognition = "*"
 
 [dev-packages]
 
