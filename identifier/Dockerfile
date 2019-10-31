@@ -1,13 +1,45 @@
-FROM python:3.6-alpine
+FROM python:3.6-slim-stretch
 
-RUN apk update 
-RUN pip install --no-cache-dir pipenv
+RUN apt-get -y update
+RUN apt-get install -y --fix-missing \
+    build-essential \
+    cmake \
+    gfortran \
+    git \
+    wget \
+    curl \
+    graphicsmagick \
+    libgraphicsmagick1-dev \
+    libatlas-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libgtk2.0-dev \
+    libjpeg-dev \
+    liblapack-dev \
+    libswscale-dev \
+    pkg-config \
+    python3-dev \
+    python3-numpy \
+    software-properties-common \
+    zip \
+    && apt-get clean && rm -rf /tmp/* /var/tmp/*
 
-WORKDIR /usr/src/app
-COPY Pipfile Pipfile.lock start.sh ./
-COPY enrollment ./enrollment 
+RUN cd ~ && \
+    mkdir -p dlib && \
+    git clone -b 'v19.9' --single-branch https://github.com/davisking/dlib.git dlib/ && \
+    cd  dlib/ && \
+    python3 setup.py install --yes USE_AVX_INSTRUCTIONS
 
-RUN pipenv install
+RUN pip install pipenv
+
+WORKDIR /identifier
+COPY Pipfile* start.sh ./
+RUN pipenv lock --requirements > requirements.txt
+RUN pip install -r requirements.txt
+COPY src ./src
+
+#RUN pipenv install 
 
 EXPOSE 5000
-ENTRYPOINT ["usr/src/app/start.sh"]
+# ENTRYPOINT ["pipenv run sh /identifier/start.sh"]
+CMD ["pipenv", "run", "sh", "./start.sh"]

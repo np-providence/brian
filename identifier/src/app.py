@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from model.encoding import compare_encoding
 app = Flask(__name__)
 
@@ -10,7 +10,8 @@ def process_encodings():
 
 @app.route("/testing")
 def testing():
-    return "WHAT IS UP"
+    data = {'kimi':'no nama'}
+    return jsonify(data), 200
 
 
 
