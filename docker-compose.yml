@@ -4,12 +4,8 @@ services:
     build: ./identifier
     ports:
       - "5000:5000"
-  kraken_designer:
-    image: devopsfaith/krakendesigner:latest
-    ports:
-      - 8787:80
   krakend_ce:
-    image: devopsfaith/krakend:1.0.0
+    image: devopsfaith/krakend
     volumes:
       - ./krakend:/etc/krakend
     ports:

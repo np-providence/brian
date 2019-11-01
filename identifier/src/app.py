@@ -5,8 +5,7 @@ app = Flask(__name__)
 @app.route("/identify", methods=['POST'])
 def process_encodings():
     data = request.get_json()
-    compare_encoding(data)
-    return "Hello, World"
+    return compare_encoding(data)
 
 @app.route("/testing")
 def testing():
