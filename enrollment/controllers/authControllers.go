@@ -23,10 +23,11 @@ var CreateAttendee = func(w http.ResponseWriter, r *http.Request){
 
 
 var GetAttendeeFor = func(w http.ResponseWriter, r *http.Request){
-  query := r.FormValue("id")
+  query := r.FormValue("student_id")
   id64 , err:= strconv.ParseUint(query, 10, 64)
   id := uint(id64)
   if err != nil {
+    fmt.Println(err)
     fmt.Println("THIS IS WRONG")
     return
   }
@@ -35,4 +36,3 @@ var GetAttendeeFor = func(w http.ResponseWriter, r *http.Request){
   resp["data"] = data
   u.Respond(w, resp)
 }
-

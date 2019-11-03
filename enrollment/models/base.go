@@ -29,7 +29,7 @@ func init(){
   }
 
   db = conn
-  db.Debug().AutoMigrate(&Attendee{})
+  db.Debug().AutoMigrate(&Attendee{}, &EventOwner{})
 }
 
 func GetDB() *gorm.DB{
