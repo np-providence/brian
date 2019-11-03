@@ -11,6 +11,7 @@ import (
 func main(){
   router := mux.NewRouter()
   router.HandleFunc("/api/attendee/new", controllers.CreateAttendee).Methods("POST")
+  router.HandleFunc("/api/attendee", controllers.GetAttendeeFor).Methods("GET")
   port := os.Getenv("PORT")
   if port == ""{
     port = "8000"
