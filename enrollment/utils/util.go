@@ -4,7 +4,6 @@ import (
   "encoding/json"
   "net/http"
   "crypto/sha1"
-  "fmt"
   "encoding/hex"
 )
 
@@ -21,6 +20,5 @@ func Hash(s string)(string){
   h := sha1.New()
   h.Write([]byte(s))
   bs := hex.EncodeToString(h.Sum(nil))
-  fmt.Println("BS", bs)
   return bs
 }

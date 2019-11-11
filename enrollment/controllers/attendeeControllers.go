@@ -4,8 +4,6 @@ import (
   "net/http"
   "../models"
   u "../utils"
-  "fmt"
-  "strconv"
   "encoding/json"
   "time"
 )
@@ -26,16 +24,15 @@ var CreateAttendee = func(w http.ResponseWriter, r *http.Request){
 
 
 var GetAttendeeFor = func(w http.ResponseWriter, r *http.Request){
-  query := r.FormValue("student_id")
-  id64 , err:= strconv.ParseUint(query, 10, 64)
-  id := uint(id64)
+  var (resp map[string]interface{})
+  query := r.FormValue("email")
+  data, err:= models.GetAttendee(query)
   if err != nil {
-    fmt.Println(err)
-    fmt.Println("THIS IS WRONG")
-    return
+    resp = u.Message(false, "fail")
+    resp["data"] = err
+  }else{
+    resp = u.Message(true, "success")
+    resp["data"] = data
   }
-  data := models.GetAttendee(id)
-  resp := u.Message(true, "success")
-  resp["data"] = data
   u.Respond(w, resp)
 }

@@ -1,6 +1,5 @@
 package models
 import(
-  "fmt"
   u "../utils"
 )
 
@@ -21,9 +20,11 @@ func (attendee *Attendee) Create() (map[string] interface{}){
   return response
 }
 
-func GetAttendee(u uint) (*Attendee) {
+func GetAttendee(u string) (*Attendee, error) {
   att := &Attendee{}
-  fmt.Println(u)
-  GetDB().Table("attendees").Where("student_id= ?", u).First(att)
-  return att
+  //GetDB().Table("attendees").Where("email= ?", u).First(att)
+  if err := GetDB().Table("attendees").Where("email = ?", u).First(att).Error; err != nil {
+    return nil, err
+  }
+  return att, nil
 }
