@@ -5,11 +5,13 @@ import(
 )
 
 type Attendee struct {
-  StudentID string `gorm:"primary_key" json:"student_id"`
+  ID string `gorm:"primary_key"`
   Course string `json:"course"`
   Year string `json:"year"`
   Name string `json:"name"`
   Gender string `json:"gender"`
+  Status bool `json:"status"`
+  Email string `json:"email"`
 }
 
 func (attendee *Attendee) Create() (map[string] interface{}){

@@ -7,12 +7,15 @@ import (
   "fmt"
   "strconv"
   "encoding/json"
+  "time"
 )
 
 var CreateAttendee = func(w http.ResponseWriter, r *http.Request){
   attendee := &models.Attendee{}
   // Decodes data from r.Body and write the data into attendee 
   err := json.NewDecoder(r.Body).Decode(attendee)
+  currentTime := time.Now().Local()
+  attendee.ID = u.Hash(currentTime.String())
   if err != nil {
     u.Respond(w, u.Message(false, "Invalid request"))
     return
