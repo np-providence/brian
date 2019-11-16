@@ -7,6 +7,7 @@ type EventOwner struct{
   EventOwnerID string `gorm:"primary_key" json:"eventowner_id"`
   Name string `json:"name"`
   Gender string `json:"gender"`
+  Status bool `json:"status"`
 }
 
 func (eventowner *EventOwner) Create() (map[string] interface{}){

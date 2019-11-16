@@ -6,14 +6,15 @@ import (
   u "../utils"
   "encoding/json"
   "time"
+  "fmt"
 )
 
 var CreateAttendee = func(w http.ResponseWriter, r *http.Request){
   attendee := &models.Attendee{}
-  // Decodes data from r.Body and write the data into attendee 
   err := json.NewDecoder(r.Body).Decode(attendee)
   currentTime := time.Now().Local()
   attendee.ID = u.Hash(currentTime.String())
+  fmt.Println(attendee)
   if err != nil {
     u.Respond(w, u.Message(false, "Invalid request"))
     return
@@ -21,7 +22,6 @@ var CreateAttendee = func(w http.ResponseWriter, r *http.Request){
   resp := attendee.Create()
   u.Respond(w, resp)
 }
-
 
 var GetAttendeeFor = func(w http.ResponseWriter, r *http.Request){
   var (resp map[string]interface{})
