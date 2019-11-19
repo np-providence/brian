@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
 from datetime import date
+from .features import addFeatures 
 
 session = Session()
 
@@ -27,6 +28,12 @@ def genhash():
 
 def addAttendee(data):
     hId = genhash()
+    featureData = {
+        "id":hId,
+        "feat":data["features"],
+        "eventowner_id":""
+    }
+    addFeatures(featureData)
     attendee = Attendee(
         id = hId,
         course = data['course'],

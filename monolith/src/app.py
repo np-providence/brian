@@ -1,11 +1,9 @@
 from flask import Flask, request, jsonify
-from model.generator import generate_encodings
 from model.attendee import addAttendee 
 from model.eventowner import addEventOwner
 from model.base import Session, engine, Base
 import json
 app = Flask(__name__)
-
 Base.metadata.create_all(engine)
 response = {
     'status':"unsucessful",
@@ -13,10 +11,6 @@ response = {
     'data':"",
     'message':""
 }
-@app.route("/api/encoding/new", methods=['POST'])
-def encoding():
-    data = request.get_json()
-    return generate_encodings(data)
 
 @app.route("/api/attendee")
 def getAttendee():
