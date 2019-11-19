@@ -1,9 +1,7 @@
-import face_recognition
-import numpy as np
-
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.types import ARRAY
-from .base import Base
+from .base import Base, Session
+session = Session()
 
 class EventOwner(Base):
     __tablename__ = 'EventOwner'
@@ -11,8 +9,18 @@ class EventOwner(Base):
     Name = Column(String)
     Gender = Column(String)
     Status = Column(Boolean)
-    def __init__(self, eventownerid, name, gender, status):
-        self.eventownerid = ID
-        self.name = Name
-        self.gender = Gender
-        self.status = Status
+    def __init__(self, name, gender, status):
+        self.Name = name
+        self.Gender = gender
+        self.Status = status
+
+def addEventOwner(data):
+   eventowner = EventOwner(
+        name = data['name'],
+        gender = data['gender'],
+        status = data['status'],
+    ) 
+   session.add(eventowner)
+   session.commit()
+   session.close()
+   return data
