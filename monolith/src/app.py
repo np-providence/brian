@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from model.attendee import addAttendee 
+from model.attendee import addAttendee, getAttendee
 from model.eventowner import addEventOwner
 from model.base import Session, engine, Base
 import json
@@ -13,9 +13,10 @@ response = {
 }
 
 @app.route("/api/attendee")
-def getAttendee():
-    data = request.get_json()
-    return;
+def getA():
+    email = request.args.get('email')
+    response["data"] = getAttendee(email);
+    return response
 
 @app.route("/api/attendee/new", methods=['POST'])
 def createAttendee():
@@ -33,3 +34,8 @@ def createEventowner():
     data = request.get_json()
     response["data"] = addEventOwner(data)
     return response
+
+@app.route("/api/identify", methods=['POST'])
+def compare():
+    data = request.get_json()
+

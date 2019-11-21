@@ -4,7 +4,7 @@ from .base import Base, Session
 from datetime import date
 session = Session()
 class Features(Base):
-    __tablename__ = 'Feature'
+    __tablename__ = 'Features'
     id = Column(BIGINT, primary_key=True)
     attendee_id = Column(String)
     eventowner_id = Column(String)

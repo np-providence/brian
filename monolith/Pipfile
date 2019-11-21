@@ -9,6 +9,7 @@ marshmallow = "*"
 face-recognition = "*"
 sqlalchemy = "*"
 psycopg2 = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 

@@ -3,6 +3,8 @@ from sqlalchemy.types import ARRAY
 from .base import Base, Session
 from datetime import date
 from .features import addFeatures 
+from marshmallow_sqlalchemy import ModelSchema
+from flask import jsonify
 
 session = Session()
 
@@ -22,6 +24,10 @@ class Attendee(Base):
         self.status = status
         self.email = email
 
+class AttendeeSchema(ModelSchema):
+    class Meta:
+        model = Attendee
+
 def genhash():
     today = date.today()
     return abs(hash(today))
@@ -34,7 +40,7 @@ def addAttendee(data):
         "eventowner_id":""
     }
     addFeatures(featureData)
-    attendee = Attendee(
+    new_attendee = Attendee(
         id = hId,
         course = data['course'],
         year = data['year'],
@@ -42,9 +48,12 @@ def addAttendee(data):
         status = data['status'],
         email = data['email']
     )
-    session.add(attendee)
+    session.add(new_attendee)
     session.commit()
-    return data
+    return jsonify(new_attendee)
 
 def getAttendee(id):
-    return 
+    attendee_schema = AttendeeSchema(many=True)
+    result = attendee_schema.dump(session.query(Attendee).filter_by(email=id))
+    return result 
+
