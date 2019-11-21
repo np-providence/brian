@@ -1,26 +1,58 @@
-from sqlalchemy import Column, String, Integer, Date, Boolean
-from sqlalchemy.types import ARRAY
+from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from .base import Base, Session
+from .features import addFeatures
+from .features import addFeatures 
+from marshmallow_sqlalchemy import ModelSchema
+from datetime import date
+
 session = Session()
 
 class EventOwner(Base):
     __tablename__ = 'EventOwner'
-    ID = Column(Integer, primary_key=True)
-    Name = Column(String)
-    Gender = Column(String)
-    Status = Column(Boolean)
-    def __init__(self, name, gender, status):
-        self.Name = name
-        self.Gender = gender
-        self.Status = status
+    id = Column(BIGINT, primary_key=True)
+    name = Column(String)
+    gender = Column(String)
+    status = Column(Boolean)
+    email = Column(String)
+
+    def __init__(self,id, name, gender, status, email):
+        self.id = id
+        self.name = name
+        self.gender = gender
+        self.status = status
+        self.email = email
+class EventOwnerSchema(ModelSchema):
+    class Meta: 
+        model = EventOwner
+
+eventowner_schema = EventOwnerSchema()
+eventowner_schemas = EventOwnerSchema(many = True)
+
+def genhash():
+    today = date.today()
+    return abs(hash(today))
 
 def addEventOwner(data):
-   eventowner = EventOwner(
+   hId = genhash()
+   featureData = {
+        "id":"",
+        "feat":data["features"],
+        "eventowner_id":hId
+    }
+   new_eventowner = EventOwner(
+        id = hId,
         name = data['name'],
         gender = data['gender'],
         status = data['status'],
+        email = data['email']
     ) 
-   session.add(eventowner)
+   session.add(new_eventowner)
    session.commit()
    session.close()
    return data
+
+
+def getEventOwner(id):
+    eventowner = session.query(EventOwner).filter_by(email = id)
+    result = eventowner_schema.dump(eventowner).data
+    return result 

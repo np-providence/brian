@@ -28,6 +28,9 @@ class AttendeeSchema(ModelSchema):
     class Meta:
         model = Attendee
 
+attendee_schema = AttendeeSchema()
+attendee_schemas = AttendeeSchema(many = True)
+
 def genhash():
     today = date.today()
     return abs(hash(today))
@@ -53,7 +56,7 @@ def addAttendee(data):
     return jsonify(new_attendee)
 
 def getAttendee(id):
-    attendee_schema = AttendeeSchema(many=True)
-    result = attendee_schema.dump(session.query(Attendee).filter_by(email=id))
+    attendee = session.query(Attendee).filter_by(email = id)
+    result = attendee_schema.dump(attendee).data
     return result 
 
