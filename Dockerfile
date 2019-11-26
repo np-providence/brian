@@ -20,6 +20,8 @@ RUN apt-get install -y --fix-missing \
     pkg-config \
     python3-dev \
     python3-numpy \
+    python-dev \
+    libpq-dev \
     software-properties-common \
     zip \
     && apt-get clean && rm -rf /tmp/* /var/tmp/*
@@ -30,16 +32,13 @@ RUN cd ~ && \
     cd  dlib/ && \
     python3 setup.py install --yes USE_AVX_INSTRUCTIONS
 
-RUN pip install pipenv
+RUN pip install poetry
 
-WORKDIR /identifier
-COPY Pipfile* start.sh ./
-RUN pipenv lock --requirements > requirements.txt
-RUN pip install -r requirements.txt
-COPY src ./src
+WORKDIR ./
+COPY ./ ./
 
-#RUN pipenv install 
+RUN poetry install
 
-EXPOSE 5001
-# ENTRYPOINT ["pipenv run sh /identifier/start.sh"]
-CMD ["pipenv", "run", "sh", "./start.sh"]
+EXPOSE 5000
+
+CMD ["poetry", "run", "python", "src/app.py"]
