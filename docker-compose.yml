@@ -1,17 +1,25 @@
 version: '3'
 services:
-  web:
-    build: .
-    ports:
-      - "5000:5000"
-    links:
-      - "db:database"
-  db:
+  postgresdb:
+    container_name: postgresdb
     image: "postgres"
     ports:
-      - "5431:5432"
+      - "6432:5432"
     restart: always
     environment: 
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_USER: postgres
-      POSTGRES_DB: database
+      POSTGRES_DB: brian
+
+  api_service:
+    container_name: api_service
+    build: .
+    # restart: on-failure
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb:postgresdb
+    command: ["./wait-for-it.sh", "postgresdb:5432","--","sh", "start.sh"]
+        

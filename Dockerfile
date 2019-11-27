@@ -30,11 +30,7 @@ RUN cd ~ && \
     git clone -b 'v19.9' --single-branch https://github.com/davisking/dlib.git dlib/ && \
     cd  dlib/ && \
     python3 setup.py install --yes USE_AVX_INSTRUCTIONS
-#RUN export POETRY_VERSION=1.0.0a0
-#RUN POETRY_PREVIEW=1 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/develop/get-poetry.py | python
-#RUN source $HOME/.poetry/env
 RUN pip install 'poetry==1.0.0a0'
-#RUN /bin/bash -c "source $HOME/.poetry/env"
 
 WORKDIR ./
 COPY pyproject.toml /
@@ -43,9 +39,8 @@ COPY requirements.txt /
 RUN pip install -r requirements.txt
 COPY ./ ./
 
-
 EXPOSE 5000
+RUN chmod +x wait-for-it.sh
 
-CMD ["poetry", "run", "python", "src/app.py"]
-#CMD ["python", "src/app.py"]
+
 
