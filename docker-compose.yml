@@ -19,7 +19,5 @@ services:
       - "5000:5000"
     depends_on:
       - postgresdb
-    links:
-      - postgresdb:postgresdb
-    command: ["./wait-for-it.sh", "postgresdb:5432","--","sh", "start.sh"]
+    command: ["sh", "start.sh"]
         
