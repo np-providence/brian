@@ -1,0 +1,59 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server for a school project"
+  version: "1.0.0"
+  title: "Attendance Taking"
+basePath: "/api"
+tags:
+- name: "enrollment"
+  description: "Everything about enrollment"
+schemes:
+- "https"
+paths:
+  /attendee:
+    get:
+      tags:
+      - "enrollment"
+      summary: "Retrieve a attendee"
+      responses:
+        '200':
+          description: 'OK'
+  /attendee/new:
+    post:
+      tags:
+      - "enrollment"
+      summary: "Add a new attendee"
+      responses:
+        '200':
+          description: 'OK'
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Attendee object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Attendee"
+
+definitions:
+  Attendee:
+    type: "object"
+    properties:
+      name:
+        type: string
+      year:
+        type: integer
+      gender:
+        type: string
+      isEnrolled:
+        type: boolean
+      email:
+        type: string
+      course:
+        type: string
+      features:
+        type: array
+        items:
+          type: array
+          items: 
+            type: integer
+

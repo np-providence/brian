@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
-from datetime import date
+from datetime import datetime
 from .features import addFeatures 
 from marshmallow_sqlalchemy import ModelSchema
 from flask import jsonify
@@ -32,7 +32,7 @@ attendee_schema = AttendeeSchema()
 attendee_schemas = AttendeeSchema(many = True)
 
 def genhash():
-    today = date.today()
+    today = datetime.now()
     return abs(hash(today))
 
 def addAttendee(data):
@@ -53,10 +53,14 @@ def addAttendee(data):
     )
     session.add(new_attendee)
     session.commit()
-    return jsonify(new_attendee)
+    session.close()
+    return new_attendee
 
 def getAttendee(id):
-    attendee = session.query(Attendee).filter_by(email = id)
-    result = attendee_schema.dump(attendee).data
-    return result 
+    attendee = session.query(Attendee).filter_by(email = id).first()
+    if attendee is None:
+        return "Attendee not found", 404
+    else:
+        result = attendee_schema.dump(attendee)
+        return result, 200 
 
