@@ -1,6 +1,7 @@
 import face_recognition
 import numpy as np
 from .features import getAllFeatures
+from .eventowner import getEventOwnerById
 def get_features():
   testing_features = [-0.12152737,  0.06416188,  0.01735289, -0.06186358, -0.06014183,
        -0.06157691, -0.03397509, -0.11230542,  0.14670537, -0.09582033,
@@ -35,16 +36,29 @@ def get_features():
   return [known_facial_features]
 
 def compare_features(incoming_features):
-    known_features = get_features()
-    incoming_features = incoming_features['features']
+    known_features = getAllFeatures()
+    incoming_features = np.asarray(incoming_features['features'])
     is_match = None
-    for face_feature in incoming_features:
-        face_feature = np.asarray(face_feature)
-        matches = face_recognition.compare_faces(known_features[0], face_feature)
-        is_match = matches[0]
+    res = None
+    for feat in known_features:
+        lol = feat
+        feat = feat['feat']
+        matches = face_recognition.compare_faces(feat, incoming_features)
+        if matches[0] == True:
+            id = lol['eventowner_id']
+            res = getEventOwnerById(id)
 
-    print("Get all features ==> ", getAllFeatures())
-    if is_match:
-        return "match"
-    else:
-        return "did not match"
+    return res
+#def compare_features(incoming_features):
+#    known_features = get_features()
+#    incoming_features = incoming_features['features']
+#    is_match = None
+#    for face_feature in incoming_features:
+#        face_feature = np.asarray(face_feature)
+#        matches = face_recognition.compare_faces(known_features[0], face_feature)
+#        is_match = matches[0]
+#
+#    if is_match:
+#        return "match"
+#    else:
+#        return "did not match"

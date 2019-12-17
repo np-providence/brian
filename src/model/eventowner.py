@@ -69,3 +69,11 @@ def getEventOwner(id):
     else:
         result = eventowner_schema.dump(eventowner)
         return result, 200
+
+def getEventOwnerById(id):
+    eventowner = session.query(EventOwner).filter_by(id = id).first()
+    if eventowner is None:
+        return "Event Owner not found", 404
+    else:
+        result = eventowner_schema.dump(eventowner)
+        return result, 200

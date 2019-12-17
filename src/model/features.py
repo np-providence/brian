@@ -3,6 +3,7 @@ from sqlalchemy.types import ARRAY
 from .base import Base, Session
 from datetime import date
 from marshmallow_sqlalchemy import ModelSchema
+import numpy as np
 session = Session()
 class Features(Base):
     __tablename__ = 'Features'
@@ -50,5 +51,12 @@ def addFeatures(data):
 def getAllFeatures():
     features = session.query(Features).all()
     result = feature_schemas.dump(features)
+    for memes in result:
+        feat = memes['feat']
+        for l in feat:
+            feat = np.asarray(l)
+        converted = [float(numeric_string) for numeric_string in feat]
+        memes['feat'] = converted
+
     return result
 
