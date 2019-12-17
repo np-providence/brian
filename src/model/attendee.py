@@ -42,19 +42,27 @@ def addAttendee(data):
         "feat":data["features"],
         "eventowner_id":""
     }
-    addFeatures(featureData)
-    new_attendee = Attendee(
-        id = hId,
-        course = data['course'],
-        year = data['year'],
-        gender = data['gender'],
-        status = data['status'],
-        email = data['email']
-    )
-    session.add(new_attendee)
-    session.commit()
-    session.close()
-    return new_attendee
+    didSucceed = addFeatures(featureData)
+    if didSucceed:
+        new_attendee = Attendee(
+            id = hId,
+            course = data['course'],
+            year = data['year'],
+            gender = data['gender'],
+            status = data['status'],
+            email = data['email']
+        )
+        session.add(new_attendee)
+        try: 
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            return "Attendee added", 200
+    else:
+        return "Add attendee failed", 200
 
 def getAttendee(id):
     attendee = session.query(Attendee).filter_by(email = id).first()

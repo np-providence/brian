@@ -39,18 +39,27 @@ def addEventOwner(data):
         "feat":data["features"],
         "eventowner_id":hId
     }
-   addFeatures(featureData)
-   new_eventowner = EventOwner(
-        id = hId,
-        name = data['name'],
-        gender = data['gender'],
-        status = data['status'],
-        email = data['email']
-    ) 
-   session.add(new_eventowner)
-   session.commit()
-   session.close()
-   return data
+   didSucceed = addFeatures(featureData)
+   if didSucceed:
+       new_eventowner = EventOwner(
+            id = hId,
+            name = data['name'],
+            gender = data['gender'],
+            status = data['status'],
+            email = data['email']
+        ) 
+       session.add(new_eventowner)
+       try: 
+           session.commit()
+       except Exception as e:
+            session.rollback()
+            raise
+       finally:
+            session.close()
+            return "Eventowner added", 200
+   else:
+        return "Add eventowner failed", 200
+   
 
 
 def getEventOwner(id):
@@ -59,5 +68,4 @@ def getEventOwner(id):
         return "Event Owner not found", 404
     else:
         result = eventowner_schema.dump(eventowner)
-        #result = eventowner_schema.dump(eventowner).data
         return result, 200

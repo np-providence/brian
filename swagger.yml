@@ -33,6 +33,29 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Attendee"
+  /eventowner:
+    get:
+      tags:
+      - "enrollment"
+      summary: "Retrieve a event owner"
+      responses:
+        '200':
+          description: 'OK'
+  /eventOwner/new:
+    post:
+      tags:
+      - "enrollment"
+      summary: "Add a new event owner"
+      responses:
+        '200':
+          description: 'OK'
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Eventowner object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/EventOwner"
 
 definitions:
   Attendee:
@@ -49,6 +72,23 @@ definitions:
       email:
         type: string
       course:
+        type: string
+      features:
+        type: array
+        items:
+          type: array
+          items: 
+            type: integer
+  EventOwner:
+    type: "object"
+    properties:
+      name:
+        type: string
+      gender:
+        type: string
+      isEnrolled:
+        type: boolean
+      email:
         type: string
       features:
         type: array

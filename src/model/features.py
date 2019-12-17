@@ -20,6 +20,7 @@ def genhash(features):
     return abs(hash(a))
 
 def addFeatures(data):
+    success = True
     fId = genhash(data["feat"])
     features = Features(
         id = fId,
@@ -28,6 +29,14 @@ def addFeatures(data):
         feat = data["feat"]
     )
     session.add(features)
-    session.commit()
-    return data
+
+    try:
+        session.commit()
+    except Exception as e:
+        success = False
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return success
 
