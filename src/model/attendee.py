@@ -72,3 +72,10 @@ def getAttendee(id):
         result = attendee_schema.dump(attendee)
         return result, 200 
 
+def getAttendeeById(id):
+    attendee = session.query(Attendee).filter_by(id = id).first()
+    if attendee is None:
+        return "Attendee not found", 404
+    else:
+        result = attendee_schema.dump(attendee)
+        return result, 200
