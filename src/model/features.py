@@ -50,13 +50,17 @@ def addFeatures(data):
 
 def getAllFeatures():
     features = session.query(Features).all()
-    result = feature_schemas.dump(features)
-    for memes in result:
-        feat = memes['feat']
-        for l in feat:
-            feat = np.asarray(l)
-        converted = [float(numeric_string) for numeric_string in feat]
-        memes['feat'] = converted
-
-    return result
+    results = feature_schemas.dump(features)
+    for record in results:
+        # featList = [[1,2], [3,4]]
+        featList = record['feat']
+        converted = []
+        for feat in featList:
+            # feat = [1,2] 
+            featArr = np.asarray(feat)
+            # Convert feat into an array and loop through the invidual elements to change the type
+            convertStrToNum= [float(numeric_string) for numeric_string in featArr]
+            converted.append(convertStrToNum)
+        record['feat'] = converted
+    return results
 
