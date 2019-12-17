@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
 from datetime import date
+from marshmallow_sqlalchemy import ModelSchema
 session = Session()
 class Features(Base):
     __tablename__ = 'Features'
@@ -14,6 +15,12 @@ class Features(Base):
         self.attendee_id = attendee_id
         self.eventowner_id = eventowner_id 
         self.feat = feat
+
+class FeaturesSchema(ModelSchema):
+    class Meta:
+        model = Features
+
+feature_schemas = FeaturesSchema(many = True)
 
 def genhash(features):
     a = tuple(tuple(p) for p in features)
@@ -39,4 +46,9 @@ def addFeatures(data):
     finally:
         session.close()
         return success
+
+def getAllFeatures():
+    features = session.query(Features).all()
+    result = feature_schemas.dump(features)
+    return result
 

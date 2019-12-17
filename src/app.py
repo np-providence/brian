@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from model.attendee import addAttendee, getAttendee
 from model.eventowner import addEventOwner, getEventOwner
 from model.base import Session, engine, Base
-from model.comparator import compare_encoding
+from model.comparator import compare_features
 import json
 app = Flask(__name__)
 Base.metadata.create_all(engine)
@@ -30,5 +30,5 @@ def createEventowner():
 @app.route("/api/identify", methods=['POST'])
 def compare():
     data = request.get_json()
-    return compare_encoding(data)
+    return compare_features(data)
 

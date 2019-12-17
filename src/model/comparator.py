@@ -1,7 +1,8 @@
 import face_recognition
 import numpy as np
-def get_encodings():
-  obama_face_encoding = [-0.12152737,  0.06416188,  0.01735289, -0.06186358, -0.06014183,
+from .features import getAllFeatures
+def get_features():
+  testing_features = [-0.12152737,  0.06416188,  0.01735289, -0.06186358, -0.06014183,
        -0.06157691, -0.03397509, -0.11230542,  0.14670537, -0.09582033,
         0.21820967, -0.08050989, -0.26305115, -0.05811048, -0.07776095,
         0.15903744, -0.11117086, -0.14190663, -0.06596021,  0.04264126,
@@ -28,19 +29,21 @@ def get_encodings():
         0.02936053,  0.04304205, -0.20527382, -0.05371002,  0.11654183,
         0.00175785,  0.18246639,  0.00376287]
   
-  known_face_encodings = [
-	np.asarray(obama_face_encoding),
+  known_facial_features= [
+	np.asarray(testing_features),
     ]
-  return [known_face_encodings]
+  return [known_facial_features]
 
-def compare_encoding(incoming_encodings):
-    known_encodings = get_encodings()
-    incoming_encodings = incoming_encodings['encoding']
+def compare_features(incoming_features):
+    known_features = get_features()
+    incoming_features = incoming_features['features']
     is_match = None
-    for face_encoding in incoming_encodings:
-        face_encoding = np.asarray(face_encoding)
-        matches = face_recognition.compare_faces(known_encodings[0], face_encoding)
-        is_match = matches
+    for face_feature in incoming_features:
+        face_feature = np.asarray(face_feature)
+        matches = face_recognition.compare_faces(known_features[0], face_feature)
+        is_match = matches[0]
+
+    print("Get all features ==> ", getAllFeatures())
     if is_match:
         return "match"
     else:
