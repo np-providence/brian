@@ -20,5 +20,4 @@ def compare_features(incoming_features):
             else:
                 res = getAttendeeById(attendee_id)
 
-
     return res

@@ -1,9 +1,14 @@
-from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
+from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT, DateTime
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
-from datetime import date
+from datetime import date, datetime
 from marshmallow_sqlalchemy import ModelSchema
+from PIL import Image
 import numpy as np
+import base64
+import io
+import face_recognition
+
 session = Session()
 class Features(Base):
     __tablename__ = 'Features'
@@ -11,6 +16,7 @@ class Features(Base):
     attendee_id = Column(String)
     eventowner_id = Column(String)
     feat = Column(ARRAY(String))
+    dateTimeRecorded = Column(DateTime, default=datetime.utcnow)
     def __init__(self, id, attendee_id, eventowner_id, feat):
         self.id = id
         self.attendee_id = attendee_id
@@ -27,21 +33,38 @@ def genhash(features):
     a = tuple(tuple(p) for p in features)
     return abs(hash(a))
 
+def generateFeaturesFromBase64(arrOBase64):
+    print("Calling generate feature")
+    features = []
+    for index, image in enumerate(arrOBase64):
+        splitImage = image.split(";base64,")
+        imageType = splitImage[0].split("/")[1]
+        imageStr = splitImage[1]
+        imageData = base64.b64decode(imageStr)
+
+        image = Image.open(io.BytesIO(imageData))
+        face_image = np.array(image)
+        face_encodings = face_recognition.face_encodings(face_image)[0]
+        features.append(face_encodings)
+    return features 
+
 def addFeatures(data):
+    featuresArr = generateFeaturesFromBase64(data['features'])
     success = True
-    fId = genhash(data["feat"])
+    fId = genhash(data["features"])
     features = Features(
         id = fId,
         attendee_id = data["id"],
         eventowner_id = data["eventowner_id"],
-        feat = data["feat"]
+        feat = featuresArr
     )
+    print("Features Arr ==> ", featuresArr)
     session.add(features)
-
     try:
         session.commit()
     except Exception as e:
         success = False
+        print("Exception ==> ", e)
         session.rollback()
         raise
     finally:

@@ -36,29 +36,29 @@ def addEventOwner(data):
    hId = genhash()
    featureData = {
         "id":"",
-        "feat":data["features"],
+        "features":data["features"],
         "eventowner_id":hId
     }
    didSucceed = addFeatures(featureData)
-   if didSucceed:
-       new_eventowner = EventOwner(
-            id = hId,
-            name = data['name'],
-            gender = data['gender'],
-            status = data['status'],
-            email = data['email']
-        ) 
-       session.add(new_eventowner)
-       try: 
-           session.commit()
-       except Exception as e:
-            session.rollback()
-            raise
-       finally:
-            session.close()
-            return "Eventowner added", 200
-   else:
-        return "Add eventowner failed", 200
+   ##if didSucceed:
+   #    new_eventowner = EventOwner(
+   #         id = hId,
+   #         name = data['name'],
+   #         gender = data['gender'],
+   #         status = data['status'],
+   #         email = data['email']
+   #     ) 
+   #    session.add(new_eventowner)
+   #    try: 
+   #        session.commit()
+   #    except Exception as e:
+   #         session.rollback()
+   #         raise
+   #    finally:
+   #         session.close()
+   #         return "Eventowner added", 200
+   #else:
+   #     return "Add eventowner failed", 200
    
 
 
