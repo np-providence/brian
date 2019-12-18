@@ -7,6 +7,8 @@ basePath: "/api"
 tags:
 - name: "enrollment"
   description: "Everything about enrollment"
+- name: "Identify"
+  description: "Everything about identifying ppl"
 schemes:
 - "https"
 paths:
@@ -56,19 +58,19 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/EventOwner"
-    /identify:
-      post:
-        tags:
-        - "enrollment"
-        summary: "To identify a student or a eventowner"
-        responses:
-          '200':
-            description: 'OK'
-        parameters:
-        - in: "body"
-          name: "body"
-          schema:
-            $ref: "#/definitions/Identify"
+  /identify:
+    post:
+      tags:
+      - "Identify"
+      summary: "To identify a student or a eventowner"
+      responses:
+        '200':
+          description: 'OK'
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Identify"
 
 definitions:
   Attendee:
@@ -109,13 +111,14 @@ definitions:
           type: array
           items: 
             type: integer
-    Identify:
-      type: 'object'
-      properties:
-        features:
+  Identify:
+    type: 'object'
+    properties:
+      features:
+        type: array
+        items:
           type: array
-          items:
-            type: array
-            items: 
-              type: integer
+          items: 
+            type: integer
+
 
