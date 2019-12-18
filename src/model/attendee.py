@@ -1,11 +1,15 @@
+import os
+import jwt
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
-from datetime import datetime
+from datetime import datetime, timedelta
 from .features import addFeatures 
 from marshmallow_sqlalchemy import ModelSchema
 from flask import jsonify
+from dotenv import load_dotenv
 
+load_dotenv()
 session = Session()
 
 class Attendee(Base):
@@ -16,6 +20,7 @@ class Attendee(Base):
     gender = Column(String)
     status = Column(Boolean)
     email = Column(String)
+    passHash = Column(String)
     def __init__(self, id, course, year, gender, status, email):
         self.id = id
         self.course = course
@@ -23,6 +28,21 @@ class Attendee(Base):
         self.gender = gender
         self.status = status
         self.email = email
+        self.passHash = passHash
+    def encode_auth_token(self, id):
+        try:
+            payload = {
+                    'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
+                    'iat': datetime.utcnow(),
+                    'sub': id
+                    }
+            return jwt.encode(
+                    payload,
+                    os.getenv('SECRET'),
+                    algorithm='HS256'
+                    )
+        except Exception as e:
+            return e
 
 class AttendeeSchema(ModelSchema):
     class Meta:
@@ -79,3 +99,13 @@ def getAttendeeById(id):
     else:
         result = attendee_schema.dump(attendee)
         return result, 200
+
+def decode_auth_token(token):
+    try:
+        payload = jwt.decode(token, os.getenv('SECRET'))
+        return payload['sub']
+    except jwt.ExpiredSignatureError:
+        raise Exception('Token expired')
+    except jwt.InvalidTokenError:
+        raise Exception('Invalid token')
+

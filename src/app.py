@@ -3,11 +3,13 @@ from model.attendee import addAttendee, getAttendee
 from model.eventowner import addEventOwner, getEventOwner
 from model.base import Session, engine, Base
 from model.comparator import compare_features
+from middleware.auth import auth
 import json
 app = Flask(__name__)
 Base.metadata.create_all(engine)
 
 @app.route("/api/attendee")
+@auth
 def getA():
     email = request.args.get('email')
     return getAttendee(email);
