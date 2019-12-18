@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from model.attendee import addAttendee, getAttendee
-from model.eventowner import addEventOwner, getEventOwner
+from model.attendee import add_attendee, get_attendee 
+from model.eventowner import add_event_owner, get_event_owner 
 from model.base import Session, engine, Base
 from model.comparator import compare_features
 from middleware.auth import auth
@@ -10,22 +10,22 @@ Base.metadata.create_all(engine)
 
 @app.route("/api/attendee")
 @auth
-def getA():
+def get_attendee():
     email = request.args.get('email')
-    return getAttendee(email);
+    return get_attendee(email);
 
 @app.route("/api/attendee/new", methods=['POST'])
-def createAttendee():
+def create_attendee():
     data = request.get_json()
-    return addAttendee(data)
+    return add_attendee(data)
 
 @app.route("/api/eventowner")
-def getEventowner():
+def get_event_owner():
     eventowner_id = request.args.get('eventowner_id')
     return getEventOwner(eventowner_id)
 
 @app.route("/api/eventowner/new", methods=['POST'])
-def createEventowner():
+def create_event_owner():
     data = request.get_json()
     return addEventOwner(data)
 

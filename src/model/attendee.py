@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
 from datetime import datetime, timedelta
-from .features import addFeatures 
+from .features import add_features 
 from marshmallow_sqlalchemy import ModelSchema
 from flask import jsonify
 from dotenv import load_dotenv
@@ -51,18 +51,18 @@ class AttendeeSchema(ModelSchema):
 attendee_schema = AttendeeSchema()
 attendee_schemas = AttendeeSchema(many = True)
 
-def genhash():
+def gen_hash():
     today = datetime.now()
     return abs(hash(today))
 
-def addAttendee(data):
-    hId = genhash()
+def add_attendee(data):
+    hId = gen_hash()
     featureData = {
         "id":hId,
         "feat":data["features"],
         "eventowner_id":""
     }
-    didSucceed = addFeatures(featureData)
+    didSucceed = add_features(featureData)
     if didSucceed:
         new_attendee = Attendee(
             id = hId,
@@ -84,7 +84,7 @@ def addAttendee(data):
     else:
         return "Add attendee failed", 200
 
-def getAttendee(id):
+def get_attendee(id):
     attendee = session.query(Attendee).filter_by(email = id).first()
     if attendee is None:
         return "Attendee not found", 404
@@ -92,7 +92,7 @@ def getAttendee(id):
         result = attendee_schema.dump(attendee)
         return result, 200 
 
-def getAttendeeById(id):
+def get_attendee_by_id(id):
     attendee = session.query(Attendee).filter_by(id = id).first()
     if attendee is None:
         return "Attendee not found", 404

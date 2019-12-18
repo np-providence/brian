@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from .base import Base, Session
-from .features import addFeatures
-from .features import addFeatures 
+from .features import add_features 
 from marshmallow_sqlalchemy import ModelSchema
 from datetime import datetime 
 
@@ -28,18 +27,18 @@ class EventOwnerSchema(ModelSchema):
 eventowner_schema = EventOwnerSchema()
 eventowner_schemas = EventOwnerSchema(many = True)
 
-def genhash():
+def gen_hash():
     today = datetime.now()
     return abs(hash(today))
 
-def addEventOwner(data):
-   hId = genhash()
+def add_event_owner(data):
+   hId = gen_hash()
    featureData = {
         "id":"",
         "feat":data["features"],
         "eventowner_id":hId
     }
-   didSucceed = addFeatures(featureData)
+   didSucceed = add_features(featureData)
    if didSucceed:
        new_eventowner = EventOwner(
             id = hId,
@@ -62,7 +61,7 @@ def addEventOwner(data):
    
 
 
-def getEventOwner(id):
+def get_event_owner(id):
     eventowner = session.query(EventOwner).filter_by(email = id).first()
     if eventowner is None:
         return "Event Owner not found", 404
@@ -70,7 +69,7 @@ def getEventOwner(id):
         result = eventowner_schema.dump(eventowner)
         return result, 200
 
-def getEventOwnerById(id):
+def get_event_owner_by_id(id):
     eventowner = session.query(EventOwner).filter_by(id = id).first()
     if eventowner is None:
         return "Event Owner not found", 404
