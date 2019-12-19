@@ -8,6 +8,8 @@ import numpy as np
 import base64
 import io
 import face_recognition
+import re
+from base64 import b64decode
 
 session = Session()
 class Features(Base):
@@ -40,35 +42,38 @@ def generateFeaturesFromBase64(arrOBase64):
         splitImage = image.split(";base64,")
         imageType = splitImage[0].split("/")[1]
         imageStr = splitImage[1]
-        imageData = base64.b64decode(imageStr)
-
-        image = Image.open(io.BytesIO(imageData))
-        face_image = np.array(image)
-        face_encodings = face_recognition.face_encodings(face_image)[0]
-        convertNumToString = [str(num_element) for num_element in face_encodings]
-        features.append(convertNumToString)
+        imageData= io.BytesIO(b64decode(re.sub("data:image/jpeg;base64", '', imageStr)))
+        face_image = face_recognition.load_image_file(imageData)
+        face_encodings = face_recognition.face_encodings(face_image)
+        if face_encodings != []:
+            convertNumToString = [str(num_element) for num_element in face_encodings[0]]
+            features.append(convertNumToString)
     return features 
 
 def addFeatures(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
     success = True
-    fId = genhash(data["features"])
-    features = Features(
-        id = fId,
-        attendee_id = data["id"],
-        eventowner_id = data["eventowner_id"],
-        feat = featuresArr
-    )
-    session.add(features)
-    try:
-        session.commit()
-    except Exception as e:
-        success = False
-        session.rollback()
-        raise
-    finally:
-        session.close()
-        return success
+    if featuresArr != []:
+        fId = genhash(data["features"])
+        features = Features(
+            id = fId,
+            attendee_id = data["id"],
+            eventowner_id = data["eventowner_id"],
+            feat = featuresArr
+        )
+        session.add(features)
+        try:
+            session.commit()
+        except Exception as e:
+            print(e)
+            success = False
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            return success
+    else:
+        return False
 
 def getAllFeatures():
     features = session.query(Features).all()

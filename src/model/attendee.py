@@ -39,7 +39,7 @@ def addAttendee(data):
     hId = genhash()
     featureData = {
         "id":hId,
-        "feat":data["features"],
+        "features":data["features"],
         "eventowner_id":""
     }
     didSucceed = addFeatures(featureData)
