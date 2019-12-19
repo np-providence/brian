@@ -29,12 +29,12 @@ class FeaturesSchema(ModelSchema):
 
 feature_schemas = FeaturesSchema(many = True)
 
+
 def genhash(features):
     a = tuple(tuple(p) for p in features)
     return abs(hash(a))
 
 def generateFeaturesFromBase64(arrOBase64):
-    print("Calling generate feature")
     features = []
     for index, image in enumerate(arrOBase64):
         splitImage = image.split(";base64,")
@@ -45,7 +45,8 @@ def generateFeaturesFromBase64(arrOBase64):
         image = Image.open(io.BytesIO(imageData))
         face_image = np.array(image)
         face_encodings = face_recognition.face_encodings(face_image)[0]
-        features.append(face_encodings)
+        convertNumToString = [str(num_element) for num_element in face_encodings]
+        features.append(convertNumToString)
     return features 
 
 def addFeatures(data):
@@ -58,13 +59,11 @@ def addFeatures(data):
         eventowner_id = data["eventowner_id"],
         feat = featuresArr
     )
-    print("Features Arr ==> ", featuresArr)
     session.add(features)
     try:
         session.commit()
     except Exception as e:
         success = False
-        print("Exception ==> ", e)
         session.rollback()
         raise
     finally:
