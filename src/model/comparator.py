@@ -12,6 +12,7 @@ def compare_features(incoming_features):
     for items in known_features:
         feature = items['feat']
         matches = face_recognition.compare_faces(feature, incoming_features)
+        print("matches ==> ", matches)
         if matches[0] == True:
             eventowner_id = items['eventowner_id']
             attendee_id = items['attendee_id']
@@ -19,6 +20,5 @@ def compare_features(incoming_features):
                 res = getEventOwnerById(eventowner_id)
             else:
                 res = getAttendeeById(attendee_id)
-
 
     return res

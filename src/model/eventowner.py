@@ -35,7 +35,7 @@ def add_event_owner(data):
    hId = gen_hash()
    featureData = {
         "id":"",
-        "feat":data["features"],
+        "features":data["features"],
         "eventowner_id":hId
     }
    didSucceed = add_features(featureData)
