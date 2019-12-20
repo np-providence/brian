@@ -15,21 +15,25 @@ def get_attendee():
     return get_attendee(email);
 
 @app.route("/api/attendee/new", methods=['POST'])
+@auth
 def create_attendee():
     data = request.get_json()
     return add_attendee(data)
 
 @app.route("/api/eventowner")
+@auth
 def get_event_owner():
     eventowner_id = request.args.get('eventowner_id')
     return getEventOwner(eventowner_id)
 
 @app.route("/api/eventowner/new", methods=['POST'])
+@auth
 def create_event_owner():
     data = request.get_json()
     return addEventOwner(data)
 
 @app.route("/api/identify", methods=['POST'])
+@auth
 def compare():
     data = request.get_json()
     return compare_features(data)

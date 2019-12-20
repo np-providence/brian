@@ -13,4 +13,5 @@ def auth(f):
             f(*args, **kwargs)
         except Exception as e:
             flask.abort(401)
+    _auth.__name__ = f.__name__
     return _auth
