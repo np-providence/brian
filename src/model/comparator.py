@@ -1,8 +1,8 @@
 import face_recognition
 import numpy as np
-from .features import getAllFeatures
-from .eventowner import getEventOwnerById
-from .attendee import getAttendeeById
+from .features import get_all_features 
+from .eventowner import get_event_owner_by_id 
+from .attendee import get_attendee_by_id 
 
 def compare_features(incoming_features):
     known_features = getAllFeatures()

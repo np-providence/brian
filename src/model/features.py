@@ -31,7 +31,6 @@ class FeaturesSchema(ModelSchema):
 
 feature_schemas = FeaturesSchema(many = True)
 
-
 def genhash(features):
     a = tuple(tuple(p) for p in features)
     return abs(hash(a))
@@ -74,8 +73,8 @@ def addFeatures(data):
             return success
     else:
         return False
-
-def getAllFeatures():
+      
+def get_all_features():
     features = session.query(Features).all()
     results = feature_schemas.dump(features)
     for record in results:
