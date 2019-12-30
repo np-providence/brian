@@ -34,7 +34,7 @@ RUN pip install 'poetry==1.0.0a0'
 
 WORKDIR ./
 COPY pyproject.toml /
-RUN poetry export -f requirements.txt
+RUN poetry export -f requirements.txt > requirements.txt
 RUN pip install -r requirements.txt
 COPY ./ ./
 
