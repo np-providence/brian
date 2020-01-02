@@ -49,7 +49,7 @@ def generateFeaturesFromBase64(arrOBase64):
             features.append(convertNumToString)
     return features 
 
-def addFeatures(data):
+def add_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
     success = True
     if featuresArr != []:

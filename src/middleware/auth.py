@@ -1,8 +1,10 @@
 import flask
+from functools import wraps
 from flask import g
 from model.attendee import decode_auth_token
 
 def auth(f):
+    @wraps(f)
     def _auth(*args, **kwargs):
         data = flask.request.get_json()
         if not data:
@@ -10,8 +12,7 @@ def auth(f):
         try:
             user_id = decode_auth_token(data["token"])
             g.user_id = user_id
-            f(*args, **kwargs)
+            return f(*args, **kwargs)
         except Exception as e:
-            flask.abort(401)
-    _auth.__name__ = f.__name__
+            flask.abort(401, 'Session invalid')
     return _auth
