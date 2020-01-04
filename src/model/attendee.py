@@ -1,5 +1,6 @@
 import os
 import jwt
+import bcrypt
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from .base import Base, Session
@@ -21,7 +22,7 @@ class Attendee(Base):
     status = Column(Boolean)
     email = Column(String)
     passHash = Column(String)
-    def __init__(self, id, course, year, gender, status, email):
+    def __init__(self, id, course, year, gender, status, email, passHash):
         self.id = id
         self.course = course
         self.year = year
@@ -29,12 +30,14 @@ class Attendee(Base):
         self.status = status
         self.email = email
         self.passHash = passHash
-    def encode_auth_token(self, id):
+    def authenticate(self, password):
+        return self.passHash == bcrypt.hashpw(password, self.passHash)
+    def encode_auth_token(self):
         try:
             payload = {
                     'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
                     'iat': datetime.utcnow(),
-                    'sub': id
+                    'sub': self.id
                     }
             return jwt.encode(
                     payload,
@@ -70,7 +73,8 @@ def add_attendee(data):
             year = data['year'],
             gender = data['gender'],
             status = data['status'],
-            email = data['email']
+            email = data['email'],
+            passHash = bcrypt.hashpw(data['password'], bcrypt.gensalt())
         )
         session.add(new_attendee)
         try: 
@@ -84,13 +88,17 @@ def add_attendee(data):
     else:
         return "Add attendee failed", 200
 
-def get_attendee(id):
-    attendee = session.query(Attendee).filter_by(email = id).first()
-    if attendee is None:
-        return "Attendee not found", 404
-    else:
-        result = attendee_schema.dump(attendee)
-        return result, 200 
+def get_attendee(email, logger):
+    try:
+        session = Session()
+        attendee = session.query(Attendee).filter_by(email = email).first()
+        if attendee is None:
+            return "Attendee not found", 404
+        else:
+            result = attendee_schema.dump(attendee)
+            return result, 200 
+    except Exception as e:
+        logger.error(e)
 
 def get_attendee_by_id(id):
     attendee = session.query(Attendee).filter_by(id = id).first()
