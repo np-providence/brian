@@ -8,6 +8,21 @@ import json
 app = Flask(__name__)
 Base.metadata.create_all(engine)
 
+@app.cli.command("seed")
+def seed():
+    print('SEED: Seeding DB...')
+    data = {
+            'features': [],
+            'course': 'Test',
+            'year': '2018',
+            'gender': 'male',
+            'status': 'What',
+            'email': 'test@test.com',
+            'password': 'password',
+            }
+    result = add_attendee(data)
+    print(result)
+
 @app.route("/api/attendee")
 @auth
 def attendee_get():
@@ -50,14 +65,18 @@ def login_post():
     result = get_attendee(email, app.logger)
     error_response = ("Email and password combination is incorrect", 401)
     if result[1] == 404:
+        app.logger.error('User not found...')
         return error_response
 
+
+    app.logger.info('Authenticating...')
     password_correct = result[0].authenticate(password)
 
-    # Generate a new token
     if password_correct:
+        app.logger.info('password correct')
         token = result[0].encode_auth_token()
         return token, 200
-
-    return error_response
+    else:
+        app.logger.error('password wrong')
+        return error_response
 
