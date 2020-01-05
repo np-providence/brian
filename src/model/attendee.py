@@ -67,6 +67,7 @@ def add_attendee(data):
     }
     didSucceed = add_features(featureData)
     if didSucceed:
+        print('password ==> ', data['password'])
         new_attendee = Attendee(
             id = hId,
             course = data['course'],

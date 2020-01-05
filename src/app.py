@@ -24,7 +24,7 @@ def seed():
             'gender': 'male',
             'status': 'What',
             'email': 'test@test.com',
-            'password': 'password',
+            'password': b'password',
             }
     result = add_attendee(data)
     print(result)
