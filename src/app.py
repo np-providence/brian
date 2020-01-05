@@ -5,14 +5,20 @@ from model.base import Session, engine, Base
 from model.comparator import compare_features
 from middleware.auth import auth 
 import json
+import base64
 app = Flask(__name__)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
+    prefix = "data:image/jpeg;base64,"
+    string_base64 = None
+    with open("joebidensides/front.jpeg", "rb") as image_file:
+        string_base64 = str(base64.b64encode(image_file.read()), 'utf-8')
+    encoded_string = prefix + string_base64
     data = {
-            'features': [],
+            'features': [encoded_string],
             'course': 'Test',
             'year': '2018',
             'gender': 'male',
@@ -39,13 +45,13 @@ def attendee_post():
 @auth
 def event_owner_get():
     eventowner_id = request.args.get('eventowner_id')
-    return getEventOwner(eventowner_id)
+    return get_event_owner(eventowner_id)
 
 @app.route("/api/eventowner/new", methods=['POST'])
-@auth
+#@auth
 def event_owner_post():
     data = request.get_json()
-    return addEventOwner(data)
+    return add_event_owner(data)
 
 @app.route("/api/identify", methods=['POST'])
 @auth

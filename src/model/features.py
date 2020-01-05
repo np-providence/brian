@@ -41,7 +41,8 @@ def generateFeaturesFromBase64(arrOBase64):
         splitImage = image.split(";base64,")
         imageType = splitImage[0].split("/")[1]
         imageStr = splitImage[1]
-        imageData= io.BytesIO(b64decode(re.sub("data:image/jpeg;base64", '', imageStr)))
+        prefix = "data:image/"+imageType+";base64"
+        imageData= io.BytesIO(b64decode(re.sub(prefix, '', imageStr)))
         face_image = face_recognition.load_image_file(imageData)
         face_encodings = face_recognition.face_encodings(face_image)
         if face_encodings != []:
