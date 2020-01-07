@@ -22,9 +22,9 @@ def seed():
             'course': 'Test',
             'year': '2018',
             'gender': 'male',
-            'status': 'What',
+            'status': True,
             'email': 'test@test.com',
-            'password': b'password',
+            'password': 'password',
             }
     result = add_attendee(data)
     print(result)
@@ -64,9 +64,6 @@ def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
 
-    app.logger.info(email)
-    app.logger.info(password)
-
     # This sucks
     result = get_attendee(email, app.logger)
     error_response = ("Email and password combination is incorrect", 401)
@@ -74,10 +71,7 @@ def login_post():
         app.logger.error('User not found...')
         return error_response
 
-
-    app.logger.info('Authenticating...')
     password_correct = result[0].authenticate(password)
-
     if password_correct:
         app.logger.info('password correct')
         token = result[0].encode_auth_token()

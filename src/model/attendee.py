@@ -21,7 +21,7 @@ class Attendee(Base):
     gender = Column(String)
     status = Column(Boolean)
     email = Column(String)
-    passHash = Column(String)
+    passHash = Column(String())
     def __init__(self, id, course, year, gender, status, email, passHash):
         self.id = id
         self.course = course
@@ -31,7 +31,8 @@ class Attendee(Base):
         self.email = email
         self.passHash = passHash
     def authenticate(self, password):
-        return self.passHash == bcrypt.hashpw(password, self.passHash)
+        return bcrypt.checkpw(password.encode('utf-8'), 
+                self.passHash.encode('utf-8'))
     def encode_auth_token(self):
         try:
             payload = {
@@ -67,7 +68,6 @@ def add_attendee(data):
     }
     didSucceed = add_features(featureData)
     if didSucceed:
-        print('password ==> ', data['password'])
         new_attendee = Attendee(
             id = hId,
             course = data['course'],
@@ -75,7 +75,7 @@ def add_attendee(data):
             gender = data['gender'],
             status = data['status'],
             email = data['email'],
-            passHash = bcrypt.hashpw(data['password'], bcrypt.gensalt())
+            passHash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         )
         session.add(new_attendee)
         try: 
@@ -96,8 +96,7 @@ def get_attendee(email, logger):
         if attendee is None:
             return "Attendee not found", 404
         else:
-            result = attendee_schema.dump(attendee)
-            return result, 200 
+            return attendee, 200 
     except Exception as e:
         logger.error(e)
 
