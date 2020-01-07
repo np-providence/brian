@@ -4,9 +4,12 @@ from model.eventowner import add_event_owner, get_event_owner
 from model.base import Session, engine, Base
 from model.comparator import compare_features
 from middleware.auth import auth 
+from flask_cors import CORS
 import json
 import base64
+
 app = Flask(__name__)
+CORS(app)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
@@ -75,7 +78,7 @@ def login_post():
     if password_correct:
         app.logger.info('password correct')
         token = result[0].encode_auth_token()
-        return token, 200
+        return jsonify(token=token.decode("utf-8"))
     else:
         app.logger.error('password wrong')
         return error_response
