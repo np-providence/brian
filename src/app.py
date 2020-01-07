@@ -59,7 +59,7 @@ def compare_post():
     data = request.get_json()
     return compare_features(data)
 
-@app.route("/user/login", methods=['POST'])
+@app.route("/user/login", methods=['GET'])
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
