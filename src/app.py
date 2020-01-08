@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
-from model.attendee import add_attendee, get_attendee 
+from model.attendee import add_attendee, get_attendee
 from model.eventowner import add_event_owner, get_event_owner 
+from model.features import add_features
 from model.base import Session, engine, Base
 from model.comparator import compare_features
 from middleware.auth import auth 
+from common.common import gen_hash
 import json
 import base64
 app = Flask(__name__)
@@ -22,12 +24,16 @@ def seed():
             'course': 'Test',
             'year': '2018',
             'gender': 'male',
-            'status': 'What',
+            'status': 'True',
             'email': 'test@test.com',
             'password': b'password',
             }
     result = add_attendee(data)
-    print(result)
+    if result: 
+        print('Attendee Sucessfully added')
+    else:
+        print('Failed to add Attendee')
+
 
 @app.route("/api/attendee")
 @auth
@@ -39,7 +45,11 @@ def attendee_get():
 @auth
 def attendee_post():
     data = request.get_json()
-    return add_attendee(data)
+    result = add_attendee(data)
+    if result: 
+        return 'Attendee Sucessfully added', 200
+    else:
+        return 'Failed to add Attendee', 400
 
 @app.route("/api/eventowner")
 @auth
@@ -48,10 +58,22 @@ def event_owner_get():
     return get_event_owner(eventowner_id)
 
 @app.route("/api/eventowner/new", methods=['POST'])
-#@auth
+@auth
 def event_owner_post():
     data = request.get_json()
     return add_event_owner(data)
+
+@app.route("/api/camera/new", methods=['POST'])
+@auth
+def register_camera():
+    data = request.get_json()
+    return add_event_owner(data)
+
+@app.route("/api/camera")
+@auth
+def get_camera():
+    eventowner_id = request.args.get('eventowner_id')
+    return get_event_owner(eventowner_id)
 
 @app.route("/api/identify", methods=['POST'])
 @auth

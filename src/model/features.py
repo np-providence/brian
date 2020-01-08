@@ -50,6 +50,20 @@ def generateFeaturesFromBase64(arrOBase64):
             features.append(convertNumToString)
     return features 
 
+def generate_features(data):
+    featuresArr = generateFeaturesFromBase64(data['features'])
+    if featuresArr != []:
+        feature_id = genhash(data["features"])
+        features = Features(
+            id = feature_id,
+            attendee_id = data["attendee_id"],
+            eventowner_id = data["eventowner_id"],
+            feat = featuresArr
+        )
+        return features
+    else:
+        return featuresArr
+
 def add_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
     success = True
