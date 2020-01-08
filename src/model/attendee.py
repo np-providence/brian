@@ -23,8 +23,8 @@ class Attendee(Base):
     gender = Column(String)
     status = Column(Boolean)
     email = Column(String)
-    passHash = Column(String())
-    def __init__(self, id, course, year, gender, status, email, passHash):
+    passHash = Column(String)
+    def __init__(self, id , course, year, gender, status, email, passHash):
         self.id = id
         self.course = course
         self.year = year
@@ -33,8 +33,7 @@ class Attendee(Base):
         self.email = email
         self.passHash = passHash
     def authenticate(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), 
-                self.passHash.encode('utf-8'))
+        return self.passHash == bcrypt.hashpw(password, self.passHash)
     def encode_auth_token(self):
         try:
             payload = {
@@ -73,7 +72,7 @@ def add_attendee(data):
             gender = data['gender'],
             status = data['status'],
             email = data['email'],
-            passHash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            passHash = bcrypt.hashpw(data['password'], bcrypt.gensalt())
             )
     session.add(new_features)
     session.add(new_attendee)
@@ -88,16 +87,13 @@ def add_attendee(data):
         session.close()
         return didSucceed
 
-def get_attendee(email, logger):
+def get_attendee(email):
     try:
         session = Session()
         attendee = session.query(Attendee).filter_by(email = email).first()
-        if attendee is None:
-            return "Attendee not found", 404
-        else:
-            return attendee, 200 
+        return attendee
     except Exception as e:
-        logger.error(e)
+        print(e)
 
 def get_attendee_by_id(id):
     attendee = session.query(Attendee).filter_by(id = id).first()
