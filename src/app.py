@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
-from model.eventowner import add_event_owner, get_event_owner 
 from model.features import add_features
 from model.base import Session, engine, Base
 from model.comparator import compare_features
 from model.camera import add_camera, get_camera
+from model.user import add_user, get_user, UserSchema
 from middleware.auth import auth 
 from common.common import gen_hash
 import json
@@ -38,7 +38,7 @@ def seed():
 
 
 @app.route("/api/attendee")
-#@auth
+@auth
 def attendee_get():
     email = request.args.get('email')
     result = get_attendee(email);
@@ -56,17 +56,25 @@ def attendee_post():
         return 'Attendee Sucessfully added', 200
     return 'Failed to add Attendee', 400
 
-@app.route("/api/eventowner")
-@auth
-def event_owner_get():
-    eventowner_id = request.args.get('eventowner_id')
-    return get_event_owner(eventowner_id)
 
-@app.route("/api/eventowner/new", methods=['POST'])
+@app.route("/api/user")
 @auth
-def event_owner_post():
+def user_get():
+    email = request.args.get('email')
+    result = get_user(email);
+    user_schema = UserSchema()
+    if result is not None:
+        return user_schema.dump(result), 200
+    return 'User not found', 400
+
+@app.route("/api/user/new", methods=['POST'])
+@auth
+def user_post():
     data = request.get_json()
-    return add_event_owner(data)
+    result = add_user(data)
+    if result: 
+        return 'User Sucessfully added', 200
+    return 'User to add Attendee', 400
 
 @app.route("/api/camera/new", methods=['POST'])
 @auth
