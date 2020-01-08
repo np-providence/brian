@@ -120,5 +120,12 @@ definitions:
           type: array
           items: 
             type: integer
+  Camera:
+    type: 'object'
+    properties:
+      macAddress:
+        type: string
+      location:
+        type: string
 
 
