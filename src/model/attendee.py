@@ -22,9 +22,9 @@ class Attendee(Base):
     year = Column(String)
     gender = Column(String)
     status = Column(Boolean)
-    email = Column(String)
-    passHash = Column(String)
-    def __init__(self, id , course, year, gender, status, email, passHash):
+    email = Column(String, unique=True)
+    passHash = Column(String())
+    def __init__(self, id, course, year, gender, status, email, passHash):
         self.id = id
         self.course = course
         self.year = year
