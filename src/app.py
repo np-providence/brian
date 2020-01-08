@@ -6,9 +6,12 @@ from model.base import Session, engine, Base
 from model.comparator import compare_features
 from middleware.auth import auth 
 from common.common import gen_hash
+from flask_cors import CORS
 import json
 import base64
+
 app = Flask(__name__)
+CORS(app)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
@@ -24,9 +27,9 @@ def seed():
             'course': 'Test',
             'year': '2018',
             'gender': 'male',
-            'status': 'True',
+            'status': True,
             'email': 'test@test.com',
-            'password': b'password',
+            'password': 'password',
             }
     result = add_attendee(data)
     if result: 
@@ -81,13 +84,10 @@ def compare_post():
     data = request.get_json()
     return compare_features(data)
 
-@app.route("/user/login", methods=['POST'])
+@app.route("/user/login", methods=['GET'])
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
-
-    app.logger.info(email)
-    app.logger.info(password)
 
     # This sucks
     result = get_attendee(email, app.logger)
@@ -96,14 +96,11 @@ def login_post():
         app.logger.error('User not found...')
         return error_response
 
-
-    app.logger.info('Authenticating...')
     password_correct = result[0].authenticate(password)
-
     if password_correct:
         app.logger.info('password correct')
         token = result[0].encode_auth_token()
-        return token, 200
+        return jsonify(token=token.decode("utf-8"))
     else:
         app.logger.error('password wrong')
         return error_response
