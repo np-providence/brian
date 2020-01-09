@@ -5,13 +5,13 @@ from model.base import Session, engine, Base
 from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema
-from middleware.auth import auth 
+from middleware.auth import auth
 from common.common import gen_hash
 import json
 import base64
 app = Flask(__name__)
-print(Base.metadata.tables)
 Base.metadata.create_all(engine)
+
 
 @app.cli.command("seed")
 def seed():
@@ -32,7 +32,7 @@ def seed():
     }
     result = add_attendee(data)
     print("Result ==> ", result)
-    if result: 
+    if result:
         print('Attendee Sucessfully added')
     else:
         print('Failed to add Attendee')
@@ -42,18 +42,19 @@ def seed():
 @auth
 def attendee_get():
     email = request.args.get('email')
-    result = get_attendee(email);
+    result = get_attendee(email)
     attendee_schema = AttendeeSchema()
     if result is not None:
         return attendee_schema.dump(result), 200
     return 'Attendee not found', 400
+
 
 @app.route("/api/attendee/new", methods=['POST'])
 @auth
 def attendee_post():
     data = request.get_json()
     result = add_attendee(data)
-    if result: 
+    if result:
         return 'Attendee Sucessfully added', 200
     return 'Failed to add Attendee', 400
 
@@ -62,20 +63,22 @@ def attendee_post():
 @auth
 def user_get():
     email = request.args.get('email')
-    result = get_user(email);
+    result = get_user(email)
     user_schema = UserSchema()
     if result is not None:
         return user_schema.dump(result), 200
     return 'User not found', 400
+
 
 @app.route("/api/user/new", methods=['POST'])
 @auth
 def user_post():
     data = request.get_json()
     result = add_user(data)
-    if result: 
+    if result:
         return 'User Sucessfully added', 200
     return 'User to add Attendee', 400
+
 
 @app.route("/api/camera/new", methods=['POST'])
 @auth
@@ -83,17 +86,20 @@ def register_camera():
     data = request.get_json()
     return add_camera(data)
 
+
 @app.route("/api/camera")
 @auth
 def camera_get():
     macaddress = request.args.get('macaddress')
     return get_camera(macaddress)
 
+
 @app.route("/api/identify", methods=['POST'])
 @auth
 def compare_post():
     data = request.get_json()
     return compare_features(data)
+
 
 @app.route("/user/login", methods=['POST'])
 def login_post():
@@ -110,7 +116,6 @@ def login_post():
         app.logger.error('User not found...')
         return error_response
 
-
     app.logger.info('Authenticating...')
     password_correct = result[0].authenticate(password)
 
@@ -121,4 +126,3 @@ def login_post():
     else:
         app.logger.error('password wrong')
         return error_response
-

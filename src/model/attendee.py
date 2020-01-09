@@ -74,8 +74,10 @@ def add_attendee(data):
                             gender=data['gender'],
                             status=data['status'],
                             email=data['email'],
-                            passHash=bcrypt.hashpw(data['password'],
-                                                   bcrypt.gensalt()))
+                            passHash=bcrypt.hashpw(
+                                data['password'].encode('utf-8'),
+                                bcrypt.gensalt()).decode('utf-8'))
+
     session.add(new_features)
     session.add(new_attendee)
     try:
