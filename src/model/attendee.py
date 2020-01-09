@@ -35,20 +35,6 @@ class Attendee(Base):
         self.email = email
         self.passHash = passHash
 
-    def authenticate(self, password):
-        return self.passHash == bcrypt.hashpw(password, self.passHash)
-
-    def encode_auth_token(self):
-        try:
-            payload = {
-                'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
-                'iat': datetime.utcnow(),
-                'sub': self.id
-            }
-            return jwt.encode(payload, os.getenv('SECRET'), algorithm='HS256')
-        except Exception as e:
-            return e
-
 
 class AttendeeSchema(ModelSchema):
     class Meta:
@@ -96,7 +82,11 @@ def get_attendee(email):
     try:
         session = Session()
         attendee = session.query(Attendee).filter_by(email=email).first()
-        return attendee
+        if attendee is None:
+            return "Attendee is not found", 404
+        else:
+            result = attendee_schema.dump(attendee)
+            return result, 200
     except Exception as e:
         print(e)
 
