@@ -4,11 +4,13 @@ from model.features import add_features
 from model.base import Session, engine, Base
 from model.comparator import compare_features
 from model.camera import add_camera, get_camera
-from model.user import add_user, get_user, UserSchema
+from model.user import add_user, get_user, UserSchema, authenticate_user
 from middleware.auth import auth
 from common.common import gen_hash
+from loguru import logger
 import json
 import base64
+
 app = Flask(__name__)
 Base.metadata.create_all(engine)
 
@@ -70,16 +72,6 @@ def user_get():
     return 'User not found', 400
 
 
-@app.route("/api/user/new", methods=['POST'])
-@auth
-def user_post():
-    data = request.get_json()
-    result = add_user(data)
-    if result:
-        return 'User Sucessfully added', 200
-    return 'User to add Attendee', 400
-
-
 @app.route("/api/camera/new", methods=['POST'])
 @auth
 def register_camera():
@@ -101,28 +93,36 @@ def compare_post():
     return compare_features(data)
 
 
-@app.route("/user/login", methods=['POST'])
+@app.route("/api/user/signup", methods=['POST'])
+def signup_post():
+    data = request.get_json()
+    result = add_user(data)
+    if result:
+        return 'User Sucessfully added', 200
+    return 'Failed to add user', 400
+
+
+@app.route("/api/user/login")
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
 
-    app.logger.info(email)
-    app.logger.info(password)
+    return authenticate_user(email, password)
 
-    # This sucks
-    result = get_attendee(email, app.logger)
-    error_response = ("Email and password combination is incorrect", 401)
-    if result[1] == 404:
-        app.logger.error('User not found...')
-        return error_response
+    ## This sucks
+    #result = get_user(email)
+    #error_response = ("Email and password combination is incorrect", 401)
+    #if result[1] == 404:
+    #    logger.error('User not found...')
+    #    return error_response
 
-    app.logger.info('Authenticating...')
-    password_correct = result[0].authenticate(password)
+    #logger.info('Authenticating...')
+    #password_correct = result[0].authenticate(password)
 
-    if password_correct:
-        app.logger.info('password correct')
-        token = result[0].encode_auth_token()
-        return token, 200
-    else:
-        app.logger.error('password wrong')
-        return error_response
+    #if password_correct:
+    #    logger.info('password correct')
+    #    token = result[0].encode_auth_token()
+    #    return token, 200
+    #else:
+    #    logger.error('password wrong')
+    #    return error_response
