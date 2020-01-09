@@ -15,6 +15,7 @@ from common.common import session_scope, gen_hash
 load_dotenv()
 session = Session()
 
+
 class Attendee(Base):
     __tablename__ = 'Attendee'
     id = Column(BIGINT, primary_key=True)
@@ -24,6 +25,7 @@ class Attendee(Base):
     status = Column(Boolean)
     email = Column(String, unique=True)
     passHash = Column(String())
+
     def __init__(self, id, course, year, gender, status, email, passHash):
         self.id = id
         self.course = course
@@ -32,51 +34,51 @@ class Attendee(Base):
         self.status = status
         self.email = email
         self.passHash = passHash
+
     def authenticate(self, password):
         return self.passHash == bcrypt.hashpw(password, self.passHash)
+
     def encode_auth_token(self):
         try:
             payload = {
-                    'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
-                    'iat': datetime.utcnow(),
-                    'sub': self.id
-                    }
-            return jwt.encode(
-                    payload,
-                    os.getenv('SECRET'),
-                    algorithm='HS256'
-                    )
+                'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
+                'iat': datetime.utcnow(),
+                'sub': self.id
+            }
+            return jwt.encode(payload, os.getenv('SECRET'), algorithm='HS256')
         except Exception as e:
             return e
+
 
 class AttendeeSchema(ModelSchema):
     class Meta:
         model = Attendee
 
+
 attendee_schema = AttendeeSchema()
-attendee_schemas = AttendeeSchema(many = True)
+attendee_schemas = AttendeeSchema(many=True)
+
 
 def add_attendee(data):
     didSucceed = False
     hash_id = gen_hash()
     features_data = {
-            'attendee_id':hash_id,
-            'eventowner_id':'',
-            'features': data['features']
+        'attendee_id': hash_id,
+        'eventowner_id': '',
+        'features': data['features']
     }
     new_features = generate_features(features_data)
-    new_attendee = Attendee(
-            id = hash_id,  
-            course = data['course'],
-            year = data['year'],
-            gender = data['gender'],
-            status = data['status'],
-            email = data['email'],
-            passHash = bcrypt.hashpw(data['password'], bcrypt.gensalt())
-            )
+    new_attendee = Attendee(id=hash_id,
+                            course=data['course'],
+                            year=data['year'],
+                            gender=data['gender'],
+                            status=data['status'],
+                            email=data['email'],
+                            passHash=bcrypt.hashpw(data['password'],
+                                                   bcrypt.gensalt()))
     session.add(new_features)
     session.add(new_attendee)
-    try: 
+    try:
         session.commit()
         didSucceed = True
     except Exception as e:
@@ -87,21 +89,24 @@ def add_attendee(data):
         session.close()
         return didSucceed
 
+
 def get_attendee(email):
     try:
         session = Session()
-        attendee = session.query(Attendee).filter_by(email = email).first()
+        attendee = session.query(Attendee).filter_by(email=email).first()
         return attendee
     except Exception as e:
         print(e)
 
+
 def get_attendee_by_id(id):
-    attendee = session.query(Attendee).filter_by(id = id).first()
+    attendee = session.query(Attendee).filter_by(id=id).first()
     if attendee is None:
         return "Attendee not found", 404
     else:
         result = attendee_schema.dump(attendee)
         return result, 200
+
 
 def decode_auth_token(token):
     try:
@@ -111,4 +116,3 @@ def decode_auth_token(token):
         raise Exception('Token expired')
     except jwt.InvalidTokenError:
         raise Exception('Invalid token')
-

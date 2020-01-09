@@ -10,6 +10,7 @@ from common.common import gen_hash
 import json
 import base64
 app = Flask(__name__)
+print(Base.metadata.tables)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
@@ -21,14 +22,14 @@ def seed():
         string_base64 = str(base64.b64encode(image_file.read()), 'utf-8')
     encoded_string = prefix + string_base64
     data = {
-            'features': [encoded_string],
-            'course': 'Test',
-            'year': '2018',
-            'gender': 'male',
-            'status': True,
-            'email': 'test@test.com',
-            'password': 'password',
-            }
+        'features': [encoded_string],
+        'course': 'Test',
+        'year': '2018',
+        'gender': 'male',
+        'status': True,
+        'email': 'test@test.com',
+        'password': 'password',
+    }
     result = add_attendee(data)
     print("Result ==> ", result)
     if result: 
