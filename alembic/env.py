@@ -6,10 +6,10 @@ from sqlalchemy import pool
 from alembic import context
 import sys
 sys.path.append('src/')
-from model.features import Base as feature_base
-from model.camera import Base as camera_base
-from model.user import Base as user_base
-from model.attendee import Base as attendee_base
+from model.features import Base
+from model.camera import Base
+from model.user import Base
+from model.attendee import Base
 from model.base import Base as og_base
 
 # this is the Alembic Config object, which provides
