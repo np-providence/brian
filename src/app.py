@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.eventowner import add_event_owner, get_event_owner 
 from model.features import add_features
@@ -10,6 +11,7 @@ from common.common import gen_hash
 import json
 import base64
 app = Flask(__name__)
+CORS(app)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
@@ -86,29 +88,23 @@ def compare_post():
     data = request.get_json()
     return compare_features(data)
 
-@app.route("/user/login", methods=['POST'])
+@app.route("/user/login", methods=['GET'])
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
 
-    app.logger.info(email)
-    app.logger.info(password)
-
     # This sucks
-    result = get_attendee(email, app.logger)
-    error_response = ("Email and password combination is incorrect", 401)
-    if result[1] == 404:
-        app.logger.error('User not found...')
-        return error_response
-
+    attendee = get_attendee(email)
+    if attendee is None: 
+        return "Email and password combination is incorrect", 401
 
     app.logger.info('Authenticating...')
-    password_correct = result[0].authenticate(password)
+    password_correct = attendee.authenticate(password)
 
     if password_correct:
         app.logger.info('password correct')
-        token = result[0].encode_auth_token()
-        return token, 200
+        token = attendee.encode_auth_token()
+        return jsonify(token=token.decode("utf-8"))
     else:
         app.logger.error('password wrong')
         return error_response
