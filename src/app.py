@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
@@ -12,6 +13,7 @@ import json
 import base64
 
 app = Flask(__name__)
+CORS(app)
 Base.metadata.create_all(engine)
 
 
@@ -102,7 +104,7 @@ def signup_post():
     return 'Failed to add user', 400
 
 
-@app.route("/api/user/login")
+@app.route("/api/user/login", methods=['GET'])
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
