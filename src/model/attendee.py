@@ -33,7 +33,8 @@ class Attendee(Base):
         self.email = email
         self.passHash = passHash
     def authenticate(self, password):
-        return self.passHash == bcrypt.hashpw(password, self.passHash)
+        return bcrypt.checkpw(password.encode('utf-8'), 
+                self.passHash.encode('utf-8'))
     def encode_auth_token(self):
         try:
             payload = {
@@ -66,17 +67,17 @@ def add_attendee(data):
     }
     new_features = generate_features(features_data)
     new_attendee = Attendee(
-            id = hash_id,  
+            id = hash_id,
             course = data['course'],
             year = data['year'],
             gender = data['gender'],
             status = data['status'],
             email = data['email'],
-            passHash = bcrypt.hashpw(data['password'], bcrypt.gensalt())
+            passHash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             )
     session.add(new_features)
     session.add(new_attendee)
-    try: 
+    try:
         session.commit()
         didSucceed = True
     except Exception as e:

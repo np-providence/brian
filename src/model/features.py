@@ -18,7 +18,7 @@ class Features(Base):
     attendee_id = Column(String)
     eventowner_id = Column(String)
     feat = Column(ARRAY(String))
-    dateTimeRecorded = Column(DateTime, default=datetime.utcnow)
+    #  dateTimeRecorded = Column(DateTime, default=datetime.utcnow)
     def __init__(self, id, attendee_id, eventowner_id, feat):
         self.id = id
         self.attendee_id = attendee_id

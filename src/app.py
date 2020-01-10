@@ -94,20 +94,17 @@ def login_post():
     password = request.args.get('password')
 
     # This sucks
-    result = get_attendee(email, app.logger)
-    error_response = ("Email and password combination is incorrect", 401)
-    if result[1] == 404:
-        app.logger.error('User not found...')
-        return error_response
-
+    attendee = get_attendee(email)
+    if attendee is None: 
+        return "Email and password combination is incorrect", 401
 
     app.logger.info('Authenticating...')
-    password_correct = result[0].authenticate(password)
+    password_correct = attendee.authenticate(password)
 
     if password_correct:
         app.logger.info('password correct')
-        token = result[0].encode_auth_token()
-        return token, 200
+        token = attendee.encode_auth_token()
+        return jsonify(token=token.decode("utf-8"))
     else:
         app.logger.error('password wrong')
         return error_response
