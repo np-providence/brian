@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.eventowner import add_event_owner, get_event_owner 
 from model.features import add_features
@@ -10,6 +11,7 @@ from common.common import gen_hash
 import json
 import base64
 app = Flask(__name__)
+CORS(app)
 Base.metadata.create_all(engine)
 
 @app.cli.command("seed")
@@ -86,13 +88,10 @@ def compare_post():
     data = request.get_json()
     return compare_features(data)
 
-@app.route("/user/login", methods=['POST'])
+@app.route("/user/login", methods=['GET'])
 def login_post():
     email = request.args.get('email')
     password = request.args.get('password')
-
-    app.logger.info(email)
-    app.logger.info(password)
 
     # This sucks
     result = get_attendee(email, app.logger)
