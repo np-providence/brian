@@ -34,23 +34,6 @@ class Attendee(Base):
         self.status = status
         self.email = email
         self.passHash = passHash
-    def authenticate(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), 
-                self.passHash.encode('utf-8'))
-    def encode_auth_token(self):
-        try:
-            payload = {
-                    'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
-                    'iat': datetime.utcnow(),
-                    'sub': self.id
-                    }
-            return jwt.encode(
-                    payload,
-                    os.getenv('SECRET'),
-                    algorithm='HS256'
-                    )
-        except Exception as e:
-            return e
 
 class AttendeeSchema(ModelSchema):
     class Meta:
@@ -70,7 +53,6 @@ def add_attendee(data):
         'features': data['features']
     }
     new_features = generate_features(features_data)
-<<<<<<< HEAD
     new_attendee = Attendee(id=hash_id,
                             course=data['course'],
                             year=data['year'],
@@ -80,18 +62,6 @@ def add_attendee(data):
                             passHash=bcrypt.hashpw(
                                 data['password'].encode('utf-8'),
                                 bcrypt.gensalt()).decode('utf-8'))
-
-=======
-    new_attendee = Attendee(
-            id = hash_id,
-            course = data['course'],
-            year = data['year'],
-            gender = data['gender'],
-            status = data['status'],
-            email = data['email'],
-            passHash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            )
->>>>>>> dfabb95268c251ddade6e7d3f27d7991d38e395b
     session.add(new_features)
     session.add(new_attendee)
     try:
@@ -128,11 +98,3 @@ def get_attendee_by_id(id):
         return result, 200
 
 
-def decode_auth_token(token):
-    try:
-        payload = jwt.decode(token, os.getenv('SECRET'))
-        return payload['sub']
-    except jwt.ExpiredSignatureError:
-        raise Exception('Token expired')
-    except jwt.InvalidTokenError:
-        raise Exception('Invalid token')

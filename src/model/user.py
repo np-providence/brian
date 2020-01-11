@@ -53,6 +53,7 @@ def add_user(data):
     session.add(new_user)
     try:
         session.commit()
+        logger.debug("User successfully added")
         didSucceed = True
     except Exception as e:
         print("Error ==> ", e)
@@ -64,6 +65,7 @@ def add_user(data):
 
 
 def get_user(email):
+    logger.info("Attempting to get user")
     try:
         user = session.query(User).filter_by(email=email).first()
         return user
@@ -84,13 +86,20 @@ def generate_auth_token(id):
             'iat': datetime.utcnow(),
             'sub': id
         }
-        return jwt.encode(payload, 'supersecret', algorithm='HS256')
+        return jwt.encode(payload, os.getenv('SECRET'), algorithm='HS256')
     except Exception as e:
         return e
 
+def decode_auth_token(token):
+    try:
+        payload = jwt.decode(token, os.getenv('SECRET'))
+        return payload['sub']
+    except jwt.ExpiredSignatureError:
+        raise Exception('Token expired')
+    except jwt.InvalidTokenError:
+        raise Exception('Invalid token')
 
 def authenticate_user(email, password):
-    response = ""
     user_data = get_user(email)
     if user_data is None:
         return "User is not found", 401
