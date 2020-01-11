@@ -35,29 +35,6 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Attendee"
-  /eventowner:
-    get:
-      tags:
-      - "enrollment"
-      summary: "Retrieve a event owner"
-      responses:
-        '200':
-          description: 'OK'
-  /eventOwner/new:
-    post:
-      tags:
-      - "enrollment"
-      summary: "Add a new event owner"
-      responses:
-        '200':
-          description: 'OK'
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Eventowner object that needs to be added"
-        required: true
-        schema:
-          $ref: "#/definitions/EventOwner"
   /identify:
     post:
       tags:
@@ -71,7 +48,51 @@ paths:
         name: "body"
         schema:
           $ref: "#/definitions/Identify"
+  /camera:
+    get:
+      tags:
+      - "camera"
+      summary: "Retrieve a camera"
+      responses:
+        '200':
+          description: 'OK'
 
+  /camera/post:
+    post:
+      tags:
+      - "camera"
+      summary: "Register a camera"
+      responses:
+        '200':
+          description: 'OK'
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Camera"
+
+  /user/signup:
+    post:
+      tags:
+      - "user"
+      summary: "Register a user"
+      responses:
+        '200':
+          description: 'OK'
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/User"
+
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Login the user"
+      responses:
+        '200':
+          description: 'OK'
 definitions:
   Attendee:
     type: "object"
@@ -91,26 +112,18 @@ definitions:
       features:
         type: array
         items:
-          type: array
-          items: 
-            type: integer
-  EventOwner:
+          type: string
+  User:
     type: "object"
     properties:
       name:
         type: string
-      gender:
-        type: string
-      isEnrolled:
+      isAdmin:
         type: boolean
+      password:
+        type: string
       email:
         type: string
-      features:
-        type: array
-        items:
-          type: array
-          items: 
-            type: integer
   Identify:
     type: 'object'
     properties:
