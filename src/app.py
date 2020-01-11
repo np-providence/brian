@@ -46,17 +46,6 @@ def attendee_post():
     return 'Failed to add Attendee', 400
 
 
-@app.route("/api/user")
-@auth
-def user_get():
-    email = request.args.get('email')
-    result = get_user(email)
-    user_schema = UserSchema()
-    if result is not None:
-        return user_schema.dump(result), 200
-    return 'User not found', 400
-
-
 @app.route("/api/camera/new", methods=['POST'])
 @auth
 def register_camera():
