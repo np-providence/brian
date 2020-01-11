@@ -8,6 +8,7 @@ from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
 from middleware.auth import auth
 from common.common import gen_hash
+from common.seed import seed_attendee, seed_user
 from loguru import logger
 import json
 import base64
@@ -20,26 +21,8 @@ Base.metadata.create_all(engine)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
-    prefix = "data:image/jpeg;base64,"
-    string_base64 = None
-    with open("joebidensides/front.jpeg", "rb") as image_file:
-        string_base64 = str(base64.b64encode(image_file.read()), 'utf-8')
-    encoded_string = prefix + string_base64
-    data = {
-        'features': [encoded_string],
-        'course': 'Test',
-        'year': '2018',
-        'gender': 'male',
-        'status': True,
-        'email': 'test@test.com',
-        'password': 'password',
-    }
-    result = add_attendee(data)
-    print("Result ==> ", result)
-    if result:
-        print('Attendee Sucessfully added')
-    else:
-        print('Failed to add Attendee')
+    seed_attendee()
+    seed_user()
 
 
 @app.route("/api/attendee")
@@ -96,7 +79,7 @@ def compare_post():
 
 
 @app.route("/api/user/signup", methods=['POST'])
-def signup_post():
+def signup():
     data = request.get_json()
     result = add_user(data)
     if result:
@@ -105,26 +88,8 @@ def signup_post():
 
 
 @app.route("/api/user/login", methods=['GET'])
-def login_post():
+def login():
     email = request.args.get('email')
     password = request.args.get('password')
 
     return authenticate_user(email, password)
-
-    ## This sucks
-    #result = get_user(email)
-    #error_response = ("Email and password combination is incorrect", 401)
-    #if result[1] == 404:
-    #    logger.error('User not found...')
-    #    return error_response
-
-    #logger.info('Authenticating...')
-    #password_correct = result[0].authenticate(password)
-
-    #if password_correct:
-    #    logger.info('password correct')
-    #    token = result[0].encode_auth_token()
-    #    return token, 200
-    #else:
-    #    logger.error('password wrong')
-    #    return error_response
