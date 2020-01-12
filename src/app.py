@@ -6,7 +6,7 @@ from model.base import Session, engine, Base
 from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
-from model.event import add_event, get_event
+from model.event import add_event, get_event, EventSchema
 from middleware.auth import auth
 from common.common import gen_hash
 from common.seed import seed_attendee, seed_user, seed_event
