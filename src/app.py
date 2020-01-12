@@ -11,7 +11,6 @@ from common.common import gen_hash
 from common.seed import seed_attendee, seed_user
 from loguru import logger
 import json
-import base64
 
 app = Flask(__name__)
 CORS(app)
