@@ -3,6 +3,7 @@
 from model.features import add_features
 from model.attendee import add_attendee
 from model.user import add_user
+from model.event import add_event
 from loguru import logger
 import base64
 
@@ -44,3 +45,18 @@ def seed_user():
         logger.info('User Sucessfully added')
     else:
         logger.info('Failed to add user')
+
+
+def seed_event():
+    logger.debug('Attempting to seed event')
+    data = {
+        "name": "Capstone",
+        "sessionPerWeek": 2,
+        "numberOfWeeks": 9,
+        "location": "IMH"
+    }
+    result = add_event(data)
+    if result:
+        logger.info('Evebt Sucessfully added')
+    else:
+        logger.info('Failed to add event')

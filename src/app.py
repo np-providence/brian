@@ -6,9 +6,10 @@ from model.base import Session, engine, Base
 from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
+from model.event import add_event, get_event
 from middleware.auth import auth
 from common.common import gen_hash
-from common.seed import seed_attendee, seed_user
+from common.seed import seed_attendee, seed_user, seed_event
 from loguru import logger
 import json
 
@@ -22,6 +23,7 @@ def seed():
     print('SEED: Seeding DB...')
     seed_attendee()
     seed_user()
+    seed_event()
 
 
 @app.route("/api/attendee")
@@ -64,6 +66,25 @@ def camera_get():
 def compare_post():
     data = request.get_json()
     return compare_features(data)
+
+
+@app.route("/api/event/new", methods=['POST'])
+def event_post():
+    data = request.get_json()
+    result = add_event(data)
+    if result:
+        return 'Event Sucessfully added', 200
+    return 'Failed to add Event', 400
+
+
+@app.route("/api/event", methods=['GET'])
+def event_get():
+    name = request.args.get('name')
+    result = get_event(name)
+    event_schema = EventSchema()
+    if result is not None:
+        return event_schema.dump(result), 200
+    return 'Event not found', 400
 
 
 @app.route("/api/user/signup", methods=['POST'])
