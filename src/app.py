@@ -1,22 +1,25 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from loguru import logger
+import face_recognition
+import json
+import base64
+import json
+
+from face import find_faces, identify_faces 
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
-from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
 from model.event import add_event, get_event, EventSchema
 from middleware.auth import auth
 from common.common import gen_hash
 from common.seed import seed_attendee, seed_user, seed_event
-from loguru import logger
-import json
 
 app = Flask(__name__)
 CORS(app)
 Base.metadata.create_all(engine)
-
 
 @app.cli.command("seed")
 def seed():
@@ -24,7 +27,6 @@ def seed():
     seed_attendee()
     seed_user()
     seed_event()
-
 
 @app.route("/api/attendee")
 @auth
@@ -37,7 +39,7 @@ def attendee_get():
     return 'Attendee not found', 400
 
 
-@app.route("/api/attendee/new", methods=['POST'])
+@app.route("/api/attendee", methods=['POST'])
 @auth
 def attendee_post():
     data = request.get_json()
@@ -47,9 +49,9 @@ def attendee_post():
     return 'Failed to add Attendee', 400
 
 
-@app.route("/api/camera/new", methods=['POST'])
+@app.route("/api/camera", methods=['POST'])
 @auth
-def register_camera():
+def camera_post():
     data = request.get_json()
     return add_camera(data)
 
@@ -63,10 +65,19 @@ def camera_get():
 
 @app.route("/api/identify", methods=['POST'])
 @auth
-def compare_post():
+def identify_post():
     data = request.get_json()
-    return compare_features(data)
+    return identify_faces(data['faces'])
 
+@app.route("/api/features", methods=['POST'])
+def features_post():
+    try:
+        data = request.get_json()
+        face_encodings, number_of_faces = find_faces(data['image'])
+        return jsonify(numberOfFaces=number_of_faces)
+    except Exception as e:
+        logger.error(e)
+        return 500, 'an error has occured'
 
 @app.route("/api/event/new", methods=['POST'])
 def event_post():
@@ -75,7 +86,6 @@ def event_post():
     if result:
         return 'Event Sucessfully added', 200
     return 'Failed to add Event', 400
-
 
 @app.route("/api/event", methods=['GET'])
 def event_get():
@@ -87,7 +97,7 @@ def event_get():
     return 'Event not found', 400
 
 
-@app.route("/api/user/signup", methods=['POST'])
+@app.route("/user/signup", methods=['POST'])
 def signup():
     data = request.get_json()
     result = add_user(data)
@@ -96,9 +106,9 @@ def signup():
     return 'Failed to add user', 400
 
 
-@app.route("/api/user/login", methods=['GET'])
+@app.route("/user/login", methods=['GET'])
 def login():
     email = request.args.get('email')
     password = request.args.get('password')
-
+    logger.info(email)
     return authenticate_user(email, password)
