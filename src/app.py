@@ -6,11 +6,10 @@ import json
 import base64
 import json
 
-from face import find_faces
+from face import find_faces, indentify_faces
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
-from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
 from model.event import add_event, get_event, EventSchema
@@ -40,7 +39,7 @@ def attendee_get():
     return 'Attendee not found', 400
 
 
-@app.route("/api/attendee/new", methods=['POST'])
+@app.route("/api/attendee", methods=['POST'])
 @auth
 def attendee_post():
     data = request.get_json()
@@ -50,9 +49,9 @@ def attendee_post():
     return 'Failed to add Attendee', 400
 
 
-@app.route("/api/camera/new", methods=['POST'])
+@app.route("/api/camera", methods=['POST'])
 @auth
-def register_camera():
+def camera_post():
     data = request.get_json()
     return add_camera(data)
 
@@ -66,18 +65,18 @@ def camera_get():
 
 @app.route("/api/identify", methods=['POST'])
 @auth
-def compare_post():
+def identify_post():
     data = request.get_json()
-    return compare_features(data)
+    return identify_faces(data['faces'])
 
 @app.route("/api/features", methods=['POST'])
-def encode_features():
+def features_post():
     try:
         data = request.get_json()
         face_encodings, number_of_faces = find_faces(data['image'])
         return jsonify(numberOfFaces=number_of_faces)
     except Exception as e:
-        app.logger.error(e)
+        logger.error(e)
         return 500, 'an error has occured'
 
 @app.route("/api/event/new", methods=['POST'])

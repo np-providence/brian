@@ -11,7 +11,5 @@ def find_faces(data):
     return face_encodings, num_of_faces
 
 def identify_faces(face_encodings):
-    for encoding in face_encodings:
-       matched_attendee = compare_faces(encoding)
-       if matched_attendee:
-            #TODO: lol
+    return [compare_features(feature) for feature in face_encodings]
+
