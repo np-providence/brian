@@ -27,9 +27,9 @@ def seed_attendee():
     result = add_attendee(data)
     print("Result ==> ", result)
     if result:
-        logger.info('Attendee Sucessfully added')
+        logger.success('Attendee Sucessfully added')
     else:
-        logger.info('Failed to add Attendee')
+        logger.error('Failed to add Attendee')
 
 
 def seed_user():
@@ -42,9 +42,9 @@ def seed_user():
     }
     result = add_user(data)
     if result:
-        logger.info('User Sucessfully added')
+        logger.success('User Sucessfully added')
     else:
-        logger.info('Failed to add user')
+        logger.error('Failed to add user')
 
 
 def seed_event():
@@ -57,6 +57,6 @@ def seed_event():
     }
     result = add_event(data)
     if result:
-        logger.info('Evebt Sucessfully added')
+        logger.success('Evebt Sucessfully added')
     else:
-        logger.info('Failed to add event')
+        logger.error('Failed to add event')
