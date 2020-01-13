@@ -1,7 +1,7 @@
 import flask
 from functools import wraps
 from flask import g
-from model.attendee import decode_auth_token
+from model.user import decode_auth_token
 
 def auth(f):
     @wraps(f)
