@@ -6,7 +6,7 @@ import json
 import base64
 import json
 
-from face import find_faces, indentify_faces
+from face import find_faces, identify_faces 
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
@@ -97,7 +97,7 @@ def event_get():
     return 'Event not found', 400
 
 
-@app.route("/api/user/signup", methods=['POST'])
+@app.route("/user/signup", methods=['POST'])
 def signup():
     data = request.get_json()
     result = add_user(data)
@@ -106,9 +106,9 @@ def signup():
     return 'Failed to add user', 400
 
 
-@app.route("/api/user/login", methods=['GET'])
+@app.route("/user/login", methods=['GET'])
 def login():
     email = request.args.get('email')
     password = request.args.get('password')
-
+    logger.info(email)
     return authenticate_user(email, password)

@@ -3,8 +3,8 @@ import jwt
 import bcrypt
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
-from .base import Base, Session
 from datetime import datetime, timedelta
+from .base import Base, Session
 from .features import add_features, generate_features
 from marshmallow_sqlalchemy import ModelSchema
 from common.common import gen_hash
@@ -107,8 +107,8 @@ def authenticate_user(email, password):
     is_password_correct = comparePassword(password, user['passHash'])
     if is_password_correct:
         logger.info('password_correct')
-        token = generate_auth_token(user['id'])
-        return token, 200
+        token = generate_auth_token(user['id']).decode('utf-8')
+        return jsonify(token=token)
     else:
         logger.error('password wrong')
         return 'Email and password combination is incorrect', 401
