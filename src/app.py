@@ -1,5 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import face_recognition
+import json
+import base64
+
+from face import find_faces
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.eventowner import add_event_owner, get_event_owner 
 from model.features import add_features
@@ -8,8 +13,7 @@ from model.comparator import compare_features
 from model.camera import add_camera, get_camera
 from middleware.auth import auth 
 from common.common import gen_hash
-import json
-import base64
+
 app = Flask(__name__)
 CORS(app)
 Base.metadata.create_all(engine)
@@ -38,9 +42,8 @@ def seed():
     else:
         print('Failed to add Attendee')
 
-
 @app.route("/api/attendee")
-#@auth
+@auth
 def attendee_get():
     email = request.args.get('email')
     result = get_attendee(email);
@@ -87,6 +90,17 @@ def camera_get():
 def compare_post():
     data = request.get_json()
     return compare_features(data)
+
+@app.route("/api/features", methods=['POST'])
+def encode_features():
+    try:
+        data = request.get_json()
+        face_encodings, number_of_faces = find_faces(data['image'])
+        return jsonify(numberOfFaces=number_of_faces)
+    except Exception as e:
+        app.logger.error(e)
+        return 500, 'an error has occured'
+    
 
 @app.route("/user/login", methods=['GET'])
 def login_post():

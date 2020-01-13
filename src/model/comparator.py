@@ -5,7 +5,7 @@ from .eventowner import get_event_owner_by_id
 from .attendee import get_attendee_by_id 
 
 def compare_features(incoming_features):
-    known_features = getAllFeatures()
+    known_features = get_all_features()
     incoming_features = np.asarray(incoming_features['features'])
     is_match = None
     res = None
