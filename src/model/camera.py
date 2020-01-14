@@ -1,13 +1,14 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from .base import Base, Session
-from .features import add_features
 from marshmallow_sqlalchemy import ModelSchema
-from datetime import datetime
+from .base import Base, Session
+
+from .features import add_features
+from common.common import db
 
 session = Session()
 
 
-class Camera(Base):
+class Camera(db.Model):
     __tablename__ = 'Camera'
     macaddress = Column(BIGINT, primary_key=True)
     location = Column(String)

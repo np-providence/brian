@@ -18,22 +18,21 @@ from model.base import Session, engine, Base
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
-from common.common import gen_hash
+from common.common import gen_hash, db
 from common.seed import seed_attendee, seed_user, seed_event
 
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
+db.init_app(app)
 
 #app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
 jwt = JWTManager(app)
 CORS(app)
-db = SQLAlchemy(app)
 
+db.create_all(app=app)
 #Base.metadata.create_all(engine)
 user_manager = UserManager(app, db, User)
-db.create_all()
-
 
 
 @app.cli.command("seed")
@@ -121,7 +120,7 @@ def event_get_all():
     event_schema = EventSchema()
     if events is not None:
         result = [event_schema.dump(event) for event in events]
-        return jsonify(result ), 200
+        return jsonify(result), 200
     return 'Event not found', 400
 
 

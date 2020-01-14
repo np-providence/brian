@@ -6,17 +6,15 @@ from marshmallow_sqlalchemy import ModelSchema
 from flask import jsonify
 from dotenv import load_dotenv
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from sqlalchemy.types import ARRAY
 from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 from flask_user import UserMixin
 
 from .base import Base, Session
 from .features import add_features, generate_features
-from common.common import session_scope, gen_hash
+from common.common import session_scope, gen_hash, db
 
 from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
 
 session = Session()
 

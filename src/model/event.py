@@ -3,15 +3,16 @@
 
 from sqlalchemy import Column, String, Integer, BIGINT
 from marshmallow_sqlalchemy import ModelSchema
-from .base import Base, Session
-from common.common import session_scope, gen_hash
 from loguru import logger
+
+from .base import Base, Session
+from common.common import session_scope, gen_hash, db
 
 session = Session()
 
 
-class Event(Base):
-    __tablename__ = 'Events'
+class Event(db.Model):
+    __tablename__ = 'Event'
     id = Column(BIGINT, primary_key=True)
     name = Column(String, unique=True)
     sesPerWeek = Column(Integer)
@@ -26,7 +27,6 @@ class Event(Base):
         self.numOfWeek = numOfWeek
         self.location = location
         self.createdBy = createdBy
-
 
 
 class EventSchema(ModelSchema):
@@ -64,6 +64,7 @@ def get_event(name):
         return event
     except Exception as e:
         print(e)
+
 
 def get_events_by_user(user):
     logger.info("Attempting to get list of user created event")

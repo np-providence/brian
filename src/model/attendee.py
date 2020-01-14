@@ -1,21 +1,20 @@
 import os
 import jwt
 import bcrypt
+from flask_user import UserMixin
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from sqlalchemy.types import ARRAY
-from .base import Base, Session
-from datetime import datetime, timedelta
-from .features import add_features, generate_features
 from marshmallow_sqlalchemy import ModelSchema
-from flask import jsonify
 from dotenv import load_dotenv
-from common.common import session_scope, gen_hash
+
+from .base import Base, Session
+from .features import add_features, generate_features
+from common.common import session_scope, gen_hash, db 
 
 load_dotenv()
 session = Session()
 
 
-class Attendee(Base):
+class Attendee(db.Model):
     __tablename__ = 'Attendee'
     id = Column(BIGINT, primary_key=True)
     course = Column(String)

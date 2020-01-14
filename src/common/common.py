@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 from model.base import Session  
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 def gen_hash():
     today = datetime.now()
     return abs(hash(today))
@@ -18,3 +21,5 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
