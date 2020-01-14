@@ -28,6 +28,7 @@ class Event(Base):
         self.createdBy = createdBy
 
 
+
 class EventSchema(ModelSchema):
     class Meta:
         model = Event
@@ -68,6 +69,15 @@ def get_events_by_user(user):
     logger.info("Attempting to get list of user created event")
     try:
         event = session.query(Event).filter_by(createdBy=user).first()
+        return event
+    except Exception as e:
+        print(e)
+
+
+def get_all_event():
+    logger.info("Attempting to get all event")
+    try:
+        event = session.query(Event).all()
         return event
     except Exception as e:
         print(e)

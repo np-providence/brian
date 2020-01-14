@@ -35,6 +35,7 @@ user_manager = UserManager(app, db, User)
 db.create_all()
 
 
+
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
@@ -111,6 +112,16 @@ def event_get():
     event_schema = EventSchema()
     if result is not None:
         return event_schema.dump(result), 200
+    return 'Event not found', 400
+
+
+@app.route("/api/event/all", methods=['GET'])
+def event_get_all():
+    events = get_all_event()
+    event_schema = EventSchema()
+    if events is not None:
+        result = [event_schema.dump(event) for event in events]
+        return jsonify(result ), 200
     return 'Event not found', 400
 
 
