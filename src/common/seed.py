@@ -53,7 +53,8 @@ def seed_event():
         "name": "Capstone",
         "sessionPerWeek": 2,
         "numberOfWeeks": 9,
-        "location": "IMH"
+        "location": "IMH",
+        "createdBy": "Saitama"
     }
     result = add_event(data)
     if result:
