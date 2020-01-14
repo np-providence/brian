@@ -1,17 +1,19 @@
 import os
 import jwt
 import bcrypt
+from loguru import logger
+from marshmallow_sqlalchemy import ModelSchema
+from flask import jsonify
+from dotenv import load_dotenv
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from datetime import datetime, timedelta
+from flask_jwt_extended import (create_access_token)
+
 from .base import Base, Session
 from .features import add_features, generate_features
-from marshmallow_sqlalchemy import ModelSchema
 from common.common import gen_hash
-from flask import jsonify
-from dotenv import load_dotenv
 from common.common import session_scope, gen_hash
-from loguru import logger
 
 session = Session()
 
@@ -78,27 +80,6 @@ def comparePassword(password, passHash):
     passHash = passHash.encode('utf-8')
     return bcrypt.checkpw(password, passHash)
 
-
-def generate_auth_token(id):
-    try:
-        payload = {
-            'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
-            'iat': datetime.utcnow(),
-            'sub': id
-        }
-        return jwt.encode(payload, os.getenv('SECRET'), algorithm='HS256')
-    except Exception as e:
-        return e
-
-def decode_auth_token(token):
-    try:
-        payload = jwt.decode(token, os.getenv('SECRET'))
-        return payload['sub']
-    except jwt.ExpiredSignatureError:
-        raise Exception('Token expired')
-    except jwt.InvalidTokenError:
-        raise Exception('Invalid token')
-
 def authenticate_user(email, password):
     user_data = get_user(email)
     if user_data is None:
@@ -107,7 +88,8 @@ def authenticate_user(email, password):
     is_password_correct = comparePassword(password, user['passHash'])
     if is_password_correct:
         logger.info('password_correct')
-        token = generate_auth_token(user['id']).decode('utf-8')
+        #token = generate_auth_token(user['id']).decode('utf-8')
+        token = create_access_token(identity=user['id'])
         return jsonify(token=token)
     else:
         logger.error('password wrong')

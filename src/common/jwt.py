@@ -1,6 +1,6 @@
 import jwt
 from loguru import logger
-
+import os
 def new_jwt(id):
     try:
         payload = {
