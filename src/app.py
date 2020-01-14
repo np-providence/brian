@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity)
+from flask_sqlalchemy import SQLAlchemy
+from flask_user import login_required, roles_required, UserManager
 from flask_cors import CORS
 from loguru import logger
 import face_recognition
@@ -9,22 +11,28 @@ import json
 import os
 
 from face import find_faces, identify_faces
+from config import ConfigClass
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
 from model.camera import add_camera, get_camera
-from model.user import add_user, get_user, UserSchema, authenticate_user
+from model.user import add_user, get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from common.common import gen_hash
 from common.seed import seed_attendee, seed_user, seed_event
 
-Base.metadata.create_all(engine)
+# Create Flask app load app.config
 app = Flask(__name__)
+app.config.from_object(__name__ + '.ConfigClass')
 
-app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
+#app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
 jwt = JWTManager(app)
-
 CORS(app)
+db = SQLAlchemy(app)
+
+#Base.metadata.create_all(engine)
+user_manager = UserManager(app, db, User)
+db.create_all()
 
 
 @app.cli.command("seed")
@@ -93,7 +101,8 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-@jwt_required
+#@jwt_required
+@roles_required('Admin')
 def event_get():
     current_user = get_jwt_identity()
     logger.debug(current_user)

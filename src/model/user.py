@@ -9,16 +9,19 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from sqlalchemy.types import ARRAY
 from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
+from flask_user import UserMixin
 
 from .base import Base, Session
 from .features import add_features, generate_features
-from common.common import gen_hash
 from common.common import session_scope, gen_hash
+
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 session = Session()
 
 
-class User(Base):
+class User(db.Model, UserMixin):
     __tablename__ = 'User'
     id = Column(BIGINT, primary_key=True)
     name = Column(String)
@@ -79,6 +82,7 @@ def comparePassword(password, passHash):
     password = password.encode('utf-8')
     passHash = passHash.encode('utf-8')
     return bcrypt.checkpw(password, passHash)
+
 
 def authenticate_user(email, password):
     user_data = get_user(email)

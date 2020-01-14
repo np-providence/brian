@@ -7,7 +7,6 @@ from .base import Base, Session
 from datetime import datetime, timedelta
 from .features import add_features, generate_features
 from marshmallow_sqlalchemy import ModelSchema
-from common.common import gen_hash
 from flask import jsonify
 from dotenv import load_dotenv
 from common.common import session_scope, gen_hash
@@ -34,6 +33,7 @@ class Attendee(Base):
         self.status = status
         self.email = email
         self.passHash = passHash
+
 
 class AttendeeSchema(ModelSchema):
     class Meta:
@@ -96,5 +96,3 @@ def get_attendee_by_id(id):
     else:
         result = attendee_schema.dump(attendee)
         return result, 200
-
-
