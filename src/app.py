@@ -6,13 +6,13 @@ import json
 import base64
 import json
 
-from face import find_faces, identify_faces 
+from face import find_faces, identify_faces
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.base import Session, engine, Base
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user
-from model.event import add_event, get_event, EventSchema
+from model.event import add_event, get_event, get_all_event, EventSchema
 from middleware.auth import auth
 from common.common import gen_hash
 from common.seed import seed_attendee, seed_user, seed_event
@@ -21,12 +21,14 @@ app = Flask(__name__)
 CORS(app)
 Base.metadata.create_all(engine)
 
+
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
     seed_attendee()
     seed_user()
     seed_event()
+
 
 @app.route("/api/attendee")
 @auth
@@ -69,6 +71,7 @@ def identify_post():
     data = request.get_json()
     return identify_faces(data['faces'])
 
+
 @app.route("/api/features", methods=['POST'])
 def features_post():
     try:
@@ -79,6 +82,7 @@ def features_post():
         logger.error(e)
         return 500, 'an error has occured'
 
+
 @app.route("/api/event/new", methods=['POST'])
 def event_post():
     data = request.get_json()
@@ -87,6 +91,7 @@ def event_post():
         return 'Event Sucessfully added', 200
     return 'Failed to add Event', 400
 
+
 @app.route("/api/event", methods=['GET'])
 def event_get():
     name = request.args.get('name')
@@ -94,6 +99,16 @@ def event_get():
     event_schema = EventSchema()
     if result is not None:
         return event_schema.dump(result), 200
+    return 'Event not found', 400
+
+
+@app.route("/api/event/all", methods=['GET'])
+def event_get_all():
+    events = get_all_event()
+    event_schema = EventSchema()
+    if events is not None:
+        result = [event_schema.dump(event) for event in events]
+        return jsonify(result ), 200
     return 'Event not found', 400
 
 
