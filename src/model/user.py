@@ -5,10 +5,8 @@ from loguru import logger
 from marshmallow_sqlalchemy import ModelSchema
 from flask import jsonify
 from dotenv import load_dotenv
-from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
-from flask_user import UserMixin
 
 from .base import Base, Session
 from .features import add_features, generate_features
@@ -19,20 +17,31 @@ from flask_sqlalchemy import SQLAlchemy
 session = Session()
 
 
-class User(db.Model, UserMixin):
-    __tablename__ = 'User'
-    id = Column(BIGINT, primary_key=True)
-    name = Column(String)
-    isAdmin = Column(Boolean)
-    email = Column(String, unique=True)
-    passHash = Column(String())
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    name = db.Column(db.String())
+    isAdmin = db.Column(db.Boolean())
+    email = db.Column(db.String(), unique=True)
+    passHash = db.Column(db.String())
+    roles = db.relationship('Role', secondary='user_roles')
 
-    def __init__(self, id, name, isAdmin, email, passHash):
-        self.id = id
-        self.name = name
-        self.isAdmin = isAdmin
-        self.email = email
-        self.passHash = passHash
+
+# Define the Role data-model
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+
+# Define the UserRoles association table
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.BIGINT(),
+                        db.ForeignKey('users.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(),
+                        db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 
 class UserSchema(ModelSchema):
@@ -53,6 +62,11 @@ def add_user(data):
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
+    admin_role = Role(name='Admin')
+    new_user.roles = [
+        admin_role,
+    ]
+    session.add(admin_role)
     session.add(new_user)
     try:
         session.commit()

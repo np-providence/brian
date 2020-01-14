@@ -58,6 +58,6 @@ def seed_event():
     }
     result = add_event(data)
     if result:
-        logger.success('Evebt Sucessfully added')
+        logger.success('Event Sucessfully added')
     else:
         logger.error('Failed to add event')

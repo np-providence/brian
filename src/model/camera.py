@@ -10,16 +10,9 @@ session = Session()
 
 class Camera(db.Model):
     __tablename__ = 'Camera'
-    macaddress = Column(BIGINT, primary_key=True)
-    location = Column(String)
+    macaddress = db.Column(db.BIGINT(), primary_key=True)
+    location = db.Column(db.String())
 
-    def __init__(
-        self,
-        macaddress,
-        location,
-    ):
-        self.macaddress = macaddress
-        self.location = location
 
 
 class CameraSchema(ModelSchema):

@@ -13,20 +13,12 @@ session = Session()
 
 class Event(db.Model):
     __tablename__ = 'Event'
-    id = Column(BIGINT, primary_key=True)
-    name = Column(String, unique=True)
-    sesPerWeek = Column(Integer)
-    numOfWeek = Column(Integer)
-    location = Column(String)
-    createdBy = Column(String)
-
-    def __init__(self, id, name, sesPerWeek, numOfWeek, location, createdBy):
-        self.id = id
-        self.name = name
-        self.sesPerWeek = sesPerWeek
-        self.numOfWeek = numOfWeek
-        self.location = location
-        self.createdBy = createdBy
+    id = db.Column(db.BIGINT(), primary_key=True)
+    name = db.Column(db.String(), unique=True)
+    sesPerWeek = db.Column(db.Integer())
+    numOfWeek = db.Column(Integer())
+    location = db.Column(String())
+    createdBy = db.Column(String())
 
 
 class EventSchema(ModelSchema):
