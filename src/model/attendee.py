@@ -4,13 +4,12 @@ import bcrypt
 from marshmallow_sqlalchemy import ModelSchema
 from dotenv import load_dotenv
 
-from .base import Base, Session
 from .features import add_features, generate_features
-from common.common import session_scope, gen_hash, db
+from common.common import gen_hash, db
 
 load_dotenv()
-session = Session()
 
+session = db.session
 
 class Attendee(db.Model):
     __tablename__ = 'Attendee'

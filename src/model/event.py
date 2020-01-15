@@ -5,10 +5,9 @@ from sqlalchemy import Column, String, Integer, BIGINT
 from marshmallow_sqlalchemy import ModelSchema
 from loguru import logger
 
-from .base import Base, Session
-from common.common import session_scope, gen_hash, db
+from common.common import gen_hash, db
 
-session = Session()
+session = db.session
 
 
 class Event(db.Model):

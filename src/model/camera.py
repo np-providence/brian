@@ -1,11 +1,10 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from marshmallow_sqlalchemy import ModelSchema
-from .base import Base, Session
 
 from .features import add_features
 from common.common import db
 
-session = Session()
+session = db.session
 
 
 class Camera(db.Model):

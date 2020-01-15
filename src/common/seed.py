@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from model.features import add_features
 from model.attendee import add_attendee
-from model.user import add_user
+from model.user import add_user, add_roles
 from model.event import add_event
 from loguru import logger
 import base64
@@ -38,13 +38,22 @@ def seed_user():
         'email': 'saitama@gmail.com',
         'name': 'Saitama',
         'password': 'password',
-        'isAdmin': False
+        'isAdmin': True
     }
     result = add_user(data)
     if result:
         logger.success('User Sucessfully added')
     else:
         logger.error('Failed to add user')
+
+def seed_roles():
+    data = [{'name':'Admin'}, {'name':'User'}]
+    for row in data:
+        result = add_roles(row)
+        if result:
+            logger.success('Role Sucessfully added')
+        else:
+            logger.error('Failed to add Role')
 
 
 def seed_event():

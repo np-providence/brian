@@ -8,13 +8,12 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 
-from .base import Base, Session
 from .features import add_features, generate_features
-from common.common import session_scope, gen_hash, db
+from common.common import gen_hash, db
 
 from flask_sqlalchemy import SQLAlchemy
 
-session = Session()
+session = db.session
 
 
 class User(db.Model):
@@ -82,16 +81,36 @@ def add_user(data):
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
-
-    admin_role = Role(name='Admin')
+    role = None
+    if data['isAdmin']:
+        role = session.query(Role).filter_by(name='Admin').first()
+    else:
+        role = session.query(Role).filter_by(name='User').first()
+    print(role)
     new_user.roles = [
-        admin_role,
+        role,
     ]
-    session.add(admin_role)
     session.add(new_user)
     try:
         session.commit()
         logger.debug("User successfully added")
+        didSucceed = True
+    except Exception as e:
+        print("Error ==> ", e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return didSucceed
+
+
+def add_roles(data):
+    didSucceed = False
+    role = Role(name=data['name'])
+    session.add(role)
+    try:
+        session.commit()
+        logger.debug("Role successfully added")
         didSucceed = True
     except Exception as e:
         print("Error ==> ", e)

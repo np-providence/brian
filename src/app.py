@@ -14,14 +14,12 @@ from face import find_faces, identify_faces
 from config import ConfigClass
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
-from model.base import Session, engine, Base
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from common.common import gen_hash, db
-from common.seed import seed_attendee, seed_user, seed_event
+from common.seed import seed_attendee, seed_user, seed_event, seed_roles
 
-# Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
 db.init_app(app)
@@ -35,6 +33,7 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
+    seed_roles()
     seed_attendee()
     seed_user()
     seed_event()

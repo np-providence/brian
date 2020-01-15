@@ -9,9 +9,8 @@ import re
 from base64 import b64decode
 
 from common.common import db
-from .base import Base, Session
 
-session = Session()
+session = db.session
 
 
 class Features(db.Model):
