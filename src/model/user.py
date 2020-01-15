@@ -24,7 +24,9 @@ class User(db.Model):
     isAdmin = db.Column(db.Boolean())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
-    roles = db.relationship('Role', secondary='user_roles')
+    roles = db.relationship('Role',
+                            secondary='user_roles',
+                            backref=db.backref('users', lazy='joined'))
 
 
 # Define the Role data-model
@@ -53,6 +55,24 @@ user_schema = UserSchema()
 user_schemas = UserSchema(many=True)
 
 
+class RoleSchema(ModelSchema):
+    class Meta:
+        model = Role
+
+
+role_schema = RoleSchema()
+role_schemas = RoleSchema(many=True)
+
+
+class UserRoleSchema(ModelSchema):
+    class Meta:
+        model = UserRoles
+
+
+user_role_schema = UserRoleSchema()
+user_role_schemas = UserRoleSchema(many=True)
+
+
 def add_user(data):
     didSucceed = False
     hash_id = gen_hash()
@@ -62,6 +82,7 @@ def add_user(data):
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
+
     admin_role = Role(name='Admin')
     new_user.roles = [
         admin_role,
@@ -90,6 +111,19 @@ def get_user(email):
         print(e)
 
 
+def get_user_roles(user_id):
+    try:
+        user_data = User.query.join(UserRoles).join(Role).filter(
+            (UserRoles.user_id == user_id)
+            & (UserRoles.role_id == Role.id)).first()
+        role = None
+        for id in user_data.roles:
+            role = role_schema.dump(id)
+        return role['name']
+    except Exception as e:
+        print(e)
+
+
 def comparePassword(password, passHash):
     password = password.encode('utf-8')
     passHash = passHash.encode('utf-8')
@@ -104,7 +138,6 @@ def authenticate_user(email, password):
     is_password_correct = comparePassword(password, user['passHash'])
     if is_password_correct:
         logger.info('password_correct')
-        #token = generate_auth_token(user['id']).decode('utf-8')
         token = create_access_token(identity=user['id'])
         return jsonify(token=token)
     else:

@@ -9,6 +9,7 @@ import base64
 import json
 import os
 
+from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
@@ -23,15 +24,12 @@ from common.seed import seed_attendee, seed_user, seed_event
 # Create Flask app load app.config
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mysecretpassword@localhost:5432/postgres'
 db.init_app(app)
 
-#app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
 jwt = JWTManager(app)
 CORS(app)
 
 db.create_all(app=app)
-#Base.metadata.create_all(engine)
 
 
 @app.cli.command("seed")
@@ -100,7 +98,7 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-@jwt_required
+@admin_required
 def event_get():
     current_user = get_jwt_identity()
     logger.debug(current_user)
