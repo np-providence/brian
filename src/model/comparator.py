@@ -3,7 +3,6 @@ from loguru import logger
 import numpy as np
 
 from .features import get_all_features 
-from .attendee import get_attendee_by_id 
 
 def compare_features(features):
     query_feature = np.asarray(features)
@@ -18,5 +17,6 @@ def compare_features(features):
 
     # TODO: Set accuracy threshold and filter
 
-    return get_attendee_by_id(matches_sorted[0][1]['attendee_id'])
+    # TODO: Return user 
+    #return get_attendee_by_id(matches_sorted[0][1]['attendee_id'])
 
