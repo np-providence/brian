@@ -5,7 +5,7 @@ from flask_jwt_extended import (JWTManager, verify_jwt_in_request,
                                 create_access_token, get_jwt_claims,
                                 get_jwt_identity)
 
-from model.user import get_user_roles
+from model.role import get_user_roles
 
 
 def admin_required(fn):

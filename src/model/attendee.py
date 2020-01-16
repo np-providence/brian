@@ -1,5 +1,4 @@
 import os
-import jwt
 import bcrypt
 from marshmallow_sqlalchemy import ModelSchema
 from dotenv import load_dotenv
