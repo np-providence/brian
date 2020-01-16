@@ -3,27 +3,21 @@
 
 from sqlalchemy import Column, String, Integer, BIGINT
 from marshmallow_sqlalchemy import ModelSchema
-from .base import Base, Session
-from common.common import session_scope, gen_hash
 from loguru import logger
 
-session = Session()
+from common.common import gen_hash, db
+
+session = db.session
 
 
-class Event(Base):
-    __tablename__ = 'Events'
-    id = Column(BIGINT, primary_key=True)
-    name = Column(String, unique=True)
-    sesPerWeek = Column(Integer)
-    numOfWeek = Column(Integer)
-    location = Column(String)
-
-    def __init__(self, id, name, sesPerWeek, numOfWeek, location):
-        self.id = id
-        self.name = name
-        self.sesPerWeek = sesPerWeek
-        self.numOfWeek = numOfWeek
-        self.location = location
+class Event(db.Model):
+    __tablename__ = 'Event'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    name = db.Column(db.String(), unique=True)
+    sesPerWeek = db.Column(db.Integer())
+    numOfWeek = db.Column(Integer())
+    location = db.Column(String())
+    createdBy = db.Column(String())
 
 
 class EventSchema(ModelSchema):
@@ -38,7 +32,8 @@ def add_event(data):
                       name=data['name'],
                       sesPerWeek=data['sessionPerWeek'],
                       numOfWeek=data['numberOfWeeks'],
-                      location=data['location'])
+                      location=data['location'],
+                      createdBy=data['createdBy'])
     session.add(new_event)
     logger.info('Attempting to add event')
     try:
@@ -57,6 +52,15 @@ def get_event(name):
     logger.info("Attempting to get event")
     try:
         event = session.query(Event).filter_by(name=name).first()
+        return event
+    except Exception as e:
+        print(e)
+
+
+def get_events_by_user(user):
+    logger.info("Attempting to get list of user created event")
+    try:
+        event = session.query(Event).filter_by(createdBy=user).first()
         return event
     except Exception as e:
         print(e)

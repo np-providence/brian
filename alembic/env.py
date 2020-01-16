@@ -10,8 +10,7 @@ from model.features import Base
 from model.camera import Base
 from model.user import Base
 from model.attendee import Base
-from model.event import Base
-from model.base import Base as og_base
+from model.event import Base as og_base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

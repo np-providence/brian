@@ -1,6 +1,3 @@
-from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT, DateTime
-from sqlalchemy.types import ARRAY
-from .base import Base, Session
 from datetime import date, datetime
 from marshmallow_sqlalchemy import ModelSchema
 from PIL import Image
@@ -11,22 +8,17 @@ import face_recognition
 import re
 from base64 import b64decode
 
-session = Session()
+from common.common import db
+
+session = db.session
 
 
-class Features(Base):
+class Features(db.Model):
     __tablename__ = 'Features'
-    id = Column(BIGINT, primary_key=True)
-    attendee_id = Column(String)
-    eventowner_id = Column(String)
-    feat = Column(ARRAY(String))
-    #  dateTimeRecorded = Column(DateTime, default=datetime.utcnow)
-    def __init__(self, id, attendee_id, eventowner_id, feat):
-        self.id = id
-        self.attendee_id = attendee_id
-        self.eventowner_id = eventowner_id
-        self.feat = feat
-
+    id = db.Column(db.BIGINT(), primary_key=True)
+    attendee_id = db.Column(db.String())
+    eventowner_id = db.Column(db.String())
+    feat = db.Column(db.ARRAY(db.String()))
 
 class FeaturesSchema(ModelSchema):
     class Meta:

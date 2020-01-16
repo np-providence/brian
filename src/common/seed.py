@@ -3,6 +3,7 @@
 from model.features import add_features
 from model.attendee import add_attendee
 from model.user import add_user
+from model.role import add_roles
 from model.event import add_event
 from loguru import logger
 import base64
@@ -27,9 +28,9 @@ def seed_attendee():
     result = add_attendee(data)
     print("Result ==> ", result)
     if result:
-        logger.info('Attendee Sucessfully added')
+        logger.success('Attendee Sucessfully added')
     else:
-        logger.info('Failed to add Attendee')
+        logger.error('Failed to add Attendee')
 
 
 def seed_user():
@@ -38,13 +39,23 @@ def seed_user():
         'email': 'saitama@gmail.com',
         'name': 'Saitama',
         'password': 'password',
-        'isAdmin': False
+        'isAdmin': True
     }
     result = add_user(data)
     if result:
-        logger.info('User Sucessfully added')
+        logger.success('User Sucessfully added')
     else:
-        logger.info('Failed to add user')
+        logger.error('Failed to add user')
+
+
+def seed_roles():
+    data = [{'name': 'Admin'}, {'name': 'User'}]
+    for row in data:
+        result = add_roles(row)
+        if result:
+            logger.success('{} role ucessfully added', row['name'])
+        else:
+            logger.error('Failed to add {} role', row['name'])
 
 
 def seed_event():
@@ -53,10 +64,11 @@ def seed_event():
         "name": "Capstone",
         "sessionPerWeek": 2,
         "numberOfWeeks": 9,
-        "location": "IMH"
+        "location": "IMH",
+        "createdBy": "Saitama"
     }
     result = add_event(data)
     if result:
-        logger.info('Evebt Sucessfully added')
+        logger.success('Event Sucessfully added')
     else:
-        logger.info('Failed to add event')
+        logger.error('Failed to add event')

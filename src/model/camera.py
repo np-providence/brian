@@ -1,24 +1,17 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from .base import Base, Session
-from .features import add_features
 from marshmallow_sqlalchemy import ModelSchema
-from datetime import datetime
 
-session = Session()
+from .features import add_features
+from common.common import db
+
+session = db.session
 
 
-class Camera(Base):
+class Camera(db.Model):
     __tablename__ = 'Camera'
-    macaddress = Column(BIGINT, primary_key=True)
-    location = Column(String)
+    macaddress = db.Column(db.BIGINT(), primary_key=True)
+    location = db.Column(db.String())
 
-    def __init__(
-        self,
-        macaddress,
-        location,
-    ):
-        self.macaddress = macaddress
-        self.location = location
 
 
 class CameraSchema(ModelSchema):

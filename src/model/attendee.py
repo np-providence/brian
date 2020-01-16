@@ -1,39 +1,25 @@
 import os
-import jwt
 import bcrypt
-from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from sqlalchemy.types import ARRAY
-from .base import Base, Session
-from datetime import datetime, timedelta
-from .features import add_features, generate_features
 from marshmallow_sqlalchemy import ModelSchema
-from common.common import gen_hash
-from flask import jsonify
 from dotenv import load_dotenv
-from common.common import session_scope, gen_hash
+
+from .features import add_features, generate_features
+from common.common import gen_hash, db
 
 load_dotenv()
-session = Session()
 
+session = db.session
 
-class Attendee(Base):
+class Attendee(db.Model):
     __tablename__ = 'Attendee'
-    id = Column(BIGINT, primary_key=True)
-    course = Column(String)
-    year = Column(String)
-    gender = Column(String)
-    status = Column(Boolean)
-    email = Column(String, unique=True)
-    passHash = Column(String())
+    id = db.Column(db.BIGINT(), primary_key=True)
+    email = db.Column(db.String(), unique=True)
+    course = db.Column(db.String())
+    year = db.Column(db.String())
+    gender = db.Column(db.String())
+    status = db.Column(db.Boolean())
+    passHash = db.Column(db.String())
 
-    def __init__(self, id, course, year, gender, status, email, passHash):
-        self.id = id
-        self.course = course
-        self.year = year
-        self.gender = gender
-        self.status = status
-        self.email = email
-        self.passHash = passHash
 
 class AttendeeSchema(ModelSchema):
     class Meta:
@@ -96,5 +82,3 @@ def get_attendee_by_id(id):
     else:
         result = attendee_schema.dump(attendee)
         return result, 200
-
-

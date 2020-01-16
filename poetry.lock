@@ -38,9 +38,6 @@ version = "3.1.7"
 cffi = ">=1.1"
 six = ">=1.4.1"
 
-[package.extras]
-tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)"]
-
 [[package]]
 category = "main"
 description = "Foreign Function Interface for Python calling C code."
@@ -126,11 +123,6 @@ Werkzeug = ">=0.15"
 click = ">=5.1"
 itsdangerous = ">=0.24"
 
-[package.extras]
-dev = ["pytest", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-issues"]
-docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-issues"]
-dotenv = ["python-dotenv"]
-
 [[package]]
 category = "main"
 description = "A Flask extension adding a decorator for CORS support"
@@ -142,6 +134,32 @@ version = "3.0.8"
 [package.dependencies]
 Flask = ">=0.9"
 Six = "*"
+
+[[package]]
+category = "main"
+description = "Extended JWT integration with Flask"
+name = "flask-jwt-extended"
+optional = false
+python-versions = "*"
+version = "3.24.1"
+
+[package.dependencies]
+Flask = ">=1.0"
+PyJWT = ">=1.6.4"
+Werkzeug = ">=0.14"
+six = "*"
+
+[[package]]
+category = "main"
+description = "Adds SQLAlchemy support to your Flask application."
+name = "flask-sqlalchemy"
+optional = false
+python-versions = ">= 2.7, != 3.0.*, != 3.1.*, != 3.2.*, != 3.3.*"
+version = "2.4.1"
+
+[package.dependencies]
+Flask = ">=0.10"
+SQLAlchemy = ">=0.8.0"
 
 [[package]]
 category = "main"
@@ -171,9 +189,6 @@ version = "2.10.3"
 [package.dependencies]
 MarkupSafe = ">=0.23"
 
-[package.extras]
-i18n = ["Babel (>=0.8)"]
-
 [[package]]
 category = "main"
 description = "Python logging made (stupidly) simple"
@@ -189,9 +204,6 @@ win32-setctime = ">=1.0.0"
 [package.dependencies.aiocontextvars]
 python = "<3.7"
 version = ">=0.2.0"
-
-[package.extras]
-dev = ["codecov (>=2.0.15)", "colorama (>=0.3.4)", "flake8 (>=3.7.7)", "isort (>=4.3.20)", "tox (>=3.9.0)", "tox-travis (>=0.12)", "pytest (>=4.6.2)", "pytest-cov (>=2.7.1)", "Sphinx (>=2.2.1)", "sphinx-autobuild (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "black (>=19.3b0)"]
 
 [[package]]
 category = "main"
@@ -220,12 +232,6 @@ optional = false
 python-versions = ">=3.5"
 version = "3.3.0"
 
-[package.extras]
-dev = ["pytest", "pytz", "simplejson", "mypy (0.750)", "flake8 (3.7.9)", "flake8-bugbear (19.8.0)", "pre-commit (>=1.20,<2.0)", "tox"]
-docs = ["sphinx (2.2.2)", "sphinx-issues (1.2.0)", "alabaster (0.7.12)", "sphinx-version-warning (1.1.2)"]
-lint = ["mypy (0.750)", "flake8 (3.7.9)", "flake8-bugbear (19.8.0)", "pre-commit (>=1.20,<2.0)"]
-tests = ["pytest", "pytz", "simplejson"]
-
 [[package]]
 category = "main"
 description = "SQLAlchemy integration with the marshmallow (de)serialization library"
@@ -237,12 +243,6 @@ version = "0.19.0"
 [package.dependencies]
 SQLAlchemy = ">=1.2.0"
 marshmallow = ">=2.15.2"
-
-[package.extras]
-dev = ["pytest", "mock", "flake8 (3.7.8)", "flake8-bugbear (19.8.0)", "pre-commit (>=1.18,<2.0)", "tox"]
-docs = ["sphinx (2.2.0)", "alabaster (0.7.12)", "sphinx-issues (1.2.0)"]
-lint = ["flake8 (3.7.8)", "flake8-bugbear (19.8.0)", "pre-commit (>=1.18,<2.0)"]
-tests = ["pytest", "mock"]
 
 [[package]]
 category = "main"
@@ -273,7 +273,7 @@ category = "main"
 description = "C parser in Python"
 name = "pycparser"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.19"
 
 [[package]]
@@ -283,11 +283,6 @@ name = "pyjwt"
 optional = false
 python-versions = "*"
 version = "1.7.1"
-
-[package.extras]
-crypto = ["cryptography (>=1.4)"]
-flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
-test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
 
 [[package]]
 category = "main"
@@ -307,9 +302,6 @@ name = "python-dotenv"
 optional = false
 python-versions = "*"
 version = "0.10.3"
-
-[package.extras]
-cli = ["click (>=5.0)"]
 
 [[package]]
 category = "main"
@@ -335,18 +327,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.3.12"
 
-[package.extras]
-mssql = ["pyodbc"]
-mssql_pymssql = ["pymssql"]
-mssql_pyodbc = ["pyodbc"]
-mysql = ["mysqlclient"]
-oracle = ["cx-oracle"]
-postgresql = ["psycopg2"]
-postgresql_pg8000 = ["pg8000"]
-postgresql_psycopg2binary = ["psycopg2-binary"]
-postgresql_psycopg2cffi = ["psycopg2cffi"]
-pymysql = ["pymysql"]
-
 [[package]]
 category = "main"
 description = "The comprehensive WSGI web application library."
@@ -354,11 +334,6 @@ name = "werkzeug"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.16.0"
-
-[package.extras]
-dev = ["pytest", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinx-issues"]
-termcolor = ["termcolor"]
-watchdog = ["watchdog"]
 
 [[package]]
 category = "main"
@@ -369,11 +344,8 @@ optional = false
 python-versions = ">=3.5"
 version = "1.0.1"
 
-[package.extras]
-dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
-
 [metadata]
-content-hash = "192d145233d690e61dbc6811857790735d18c811239a634c5bd5b0ae5d195cdb"
+content-hash = "6b7344d070445c032dce89c5d4d7196425be99e9ca512f0eedd83ccd020f72b9"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -389,6 +361,8 @@ face-recognition = ["08c41397d3b899ed5b4a801646abd20935a2610ac4ba8643173db0aef63
 face-recognition-models = ["b79bd200a88c87c9a9d446c990ae71c5a626d1f3730174e6d570157ff1d896cf"]
 flask = ["13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52", "45eb5a6fd193d6cf7e0cf5d8a5b31f83d5faae0293695626f539a823e93b13f6"]
 flask-cors = ["72170423eb4612f0847318afff8c247b38bd516b7737adfc10d1c2cdbb382d16", "f4d97201660e6bbcff2d89d082b5b6d31abee04b1b3003ee073a6fd25ad1d69a"]
+flask-jwt-extended = ["0aa8ee6fa7eb3be9314e39dd199ac8e19389a95371f9d54e155c7aa635e319dd"]
+flask-sqlalchemy = ["0078d8663330dc05a74bc72b3b6ddc441b9a744e2f56fe60af1a5bfc81334327", "6974785d913666587949f7c2946f7001e4fa2cb2d19f4e69ead02e4b8f50b33d"]
 immutables = ["0aa055c745510238cbad2f1f709a37a1c9e30a38594de3b385e9876c48a25633", "0f07c58122e1ce70a7165e68e18e795ac5fe94d7fee3e045ffcf6432602026df", "1c2e729aab250be0de0c13fa833241a778b51390ee2650e0457d1e45b318c441", "2c536ff2bafeeff9a7865ea10a17a50f90b80b585e31396c349e8f57b0075bd4", "2de2ec8dde1ca154f811776a8cbbeaea515c3b226c26036eab6484530eea28e0", "422c7d4c75c88057c625e32992248329507bca180b48cfb702b4ef608f581b50", "518f20945c1f600b618fb691922c2ab43b193f04dd2d4d2823220d0202014670", "545186faab9237c102b8bcffd36d71f0b382174c93c501e061de239753cff694", "6b6d8d035e5888baad3db61dfb167476838a63afccecd927c365f228bb55754c", "b268422a5802fbf934152b835329ac0d23b80b558eaee68034d45718edab4a11", "b8fed714f1c84a3242c7184838f5e9889139a22bbdd701a182b7fdc237ca3cbb", "bce27277a2fe91509cca69181971ab509c2ee862e8b37b09f26b64f90e8fe8fb", "c7eb2d15c35c73bb168c002c6ea145b65f40131e10dede54b39db0b72849b280", "d6850578a0dc6530ac19113cfe4ddc13903df635212d498f176fe601a8a5a4a3", "e87bd941cb4dfa35f16e1ff4b2d99a2931452dcc9cfd788dc8fe513f3d38551e", "f5b93248552c9e7198558776da21c9157d3f70649905d7fdc083c2ab2fbc6088"]
 itsdangerous = ["321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19", "b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749"]
 jinja2 = ["74320bb91f31270f9551d46522e33af46a80c3d619f4a4bf42b3164d30b5911f", "9fe95f19286cfefaa917656583d020be14e7859c6b0252588391e47db34527de"]

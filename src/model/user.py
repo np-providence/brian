@@ -1,35 +1,40 @@
 import os
-import jwt
 import bcrypt
-from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
-from sqlalchemy.types import ARRAY
-from datetime import datetime, timedelta
-from .base import Base, Session
-from .features import add_features, generate_features
+from loguru import logger
 from marshmallow_sqlalchemy import ModelSchema
-from common.common import gen_hash
 from flask import jsonify
 from dotenv import load_dotenv
-from common.common import session_scope, gen_hash
-from loguru import logger
+from datetime import datetime, timedelta
+from flask_jwt_extended import (create_access_token)
+from flask_sqlalchemy import SQLAlchemy
 
-session = Session()
+from .features import add_features, generate_features
+from .role import role_schema, get_user_roles, Role
+from common.common import gen_hash, db
+
+session = db.session
 
 
-class User(Base):
-    __tablename__ = 'User'
-    id = Column(BIGINT, primary_key=True)
-    name = Column(String)
-    isAdmin = Column(Boolean)
-    email = Column(String, unique=True)
-    passHash = Column(String())
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    name = db.Column(db.String())
+    isAdmin = db.Column(db.Boolean())
+    email = db.Column(db.String(), unique=True)
+    passHash = db.Column(db.String())
+    roles = db.relationship('Role',
+                            secondary='user_roles',
+                            backref=db.backref('users', lazy='joined'))
 
-    def __init__(self, id, name, isAdmin, email, passHash):
-        self.id = id
-        self.name = name
-        self.isAdmin = isAdmin
-        self.email = email
-        self.passHash = passHash
+
+# Define the UserRoles association table
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.BIGINT(),
+                        db.ForeignKey('users.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(),
+                        db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 
 class UserSchema(ModelSchema):
@@ -41,6 +46,15 @@ user_schema = UserSchema()
 user_schemas = UserSchema(many=True)
 
 
+class UserRoleSchema(ModelSchema):
+    class Meta:
+        model = UserRoles
+
+
+user_role_schema = UserRoleSchema()
+user_role_schemas = UserRoleSchema(many=True)
+
+
 def add_user(data):
     didSucceed = False
     hash_id = gen_hash()
@@ -50,6 +64,15 @@ def add_user(data):
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
+    role = None
+    if data['isAdmin']:
+        role = session.query(Role).filter_by(name='Admin').first()
+    else:
+        role = session.query(Role).filter_by(name='User').first()
+    print(role)
+    new_user.roles = [
+        role,
+    ]
     session.add(new_user)
     try:
         session.commit()
@@ -79,26 +102,6 @@ def comparePassword(password, passHash):
     return bcrypt.checkpw(password, passHash)
 
 
-def generate_auth_token(id):
-    try:
-        payload = {
-            'exp': datetime.utcnow() + timedelta(days=0, seconds=5),
-            'iat': datetime.utcnow(),
-            'sub': id
-        }
-        return jwt.encode(payload, os.getenv('SECRET'), algorithm='HS256')
-    except Exception as e:
-        return e
-
-def decode_auth_token(token):
-    try:
-        payload = jwt.decode(token, os.getenv('SECRET'))
-        return payload['sub']
-    except jwt.ExpiredSignatureError:
-        raise Exception('Token expired')
-    except jwt.InvalidTokenError:
-        raise Exception('Invalid token')
-
 def authenticate_user(email, password):
     user_data = get_user(email)
     if user_data is None:
@@ -107,7 +110,7 @@ def authenticate_user(email, password):
     is_password_correct = comparePassword(password, user['passHash'])
     if is_password_correct:
         logger.info('password_correct')
-        token = generate_auth_token(user['id']).decode('utf-8')
+        token = create_access_token(identity=user['id'])
         return jsonify(token=token)
     else:
         logger.error('password wrong')
