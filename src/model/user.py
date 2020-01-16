@@ -16,10 +16,9 @@ session = db.session
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.BIGINT(), primary_key=True)
     name = db.Column(db.String())
-    isAdmin = db.Column(db.Boolean())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
     roles = db.relationship('Role',
@@ -54,7 +53,6 @@ class UserRoleSchema(ModelSchema):
 user_role_schema = UserRoleSchema()
 user_role_schemas = UserRoleSchema(many=True)
 
-
 def add_user(data):
     didSucceed = False
     hash_id = gen_hash()
@@ -85,7 +83,6 @@ def add_user(data):
     finally:
         session.close()
         return didSucceed
-
 
 def get_user(email):
     logger.info("Attempting to get user")
