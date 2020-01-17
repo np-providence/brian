@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity)
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_migrate import Migrate
 from loguru import logger
 import face_recognition
 import json
@@ -23,7 +24,7 @@ from common.seed import seed_attendee, seed_user, seed_event, seed_roles
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
 db.init_app(app)
-
+migrate = Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
 
