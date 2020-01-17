@@ -1,5 +1,6 @@
 from.user import User
 from common.common import gen_hash, db
+from marshmallow_sqlalchemy import ModelSchema
 
 session = db.session
 
@@ -11,4 +12,6 @@ class EventOwner(User):
         'polymorphic_identity':'event_owner',
     }
 
-
+class EventOwnerSchema(ModelSchema):
+    class Meta:
+        model = EventOwner
