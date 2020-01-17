@@ -12,21 +12,20 @@ from common.common import db
 
 session = db.session
 
-
-class Features(db.Model):
-    __tablename__ = 'Features'
+# TODO: This file will not compile, need to rewrite
+class Feature(db.Model):
+    __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
-    attendee_id = db.Column(db.String())
-    eventowner_id = db.Column(db.String())
-    feat = db.Column(db.ARRAY(db.String()))
+    user_id = db.Column(db.BIGINT(), db.foreignKey('user.id'))
+    face_encoding = db.Column(db.String())
+    date_time_recorded = db.Column(db.DateTime())
 
-class FeaturesSchema(ModelSchema):
+class FeatureSchema(ModelSchema):
     class Meta:
         model = Features
 
 
-feature_schemas = FeaturesSchema(many=True)
-
+feature_schemas = FeatureSchema(many=True)
 
 def genhash(features):
     a = tuple(tuple(p) for p in features)

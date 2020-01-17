@@ -6,8 +6,8 @@ session = db.session
 class Student(User):
     __tablename__ = 'student'
     id = db.Column(db.BIGINT(), db.ForeignKey('user.id'), primary_key=True)
-    course_id = Column(db.BIGINT(), db.ForeignKey('course.id'))
-    year_id = Column(db.BIGINT(), db.ForeignKey('year.id'))
+    course_id = db.Column(db.BIGINT(), db.ForeignKey('course.id'))
+    year_id = db.Column(db.BIGINT(), db.ForeignKey('course.id'))
 
     __mapper_args__ = {
         'polymorphic_identity':'student',

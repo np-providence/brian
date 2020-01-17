@@ -7,7 +7,7 @@ from common.common import db
 session = db.session
 
 class Role(db.Model):
-    __tablename__ = 'roles'
+    __tablename__ = 'role'
     id = db.Column(db.BIGINT(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
 

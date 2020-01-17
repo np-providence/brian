@@ -21,14 +21,14 @@ class User(db.Model):
     name = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
-    roles = db.relationship('Role',
-                            secondary='user_roles',
-                            backref=db.backref('users', lazy='joined'))
+    roles = db.relationship('role',
+                            secondary='user_role',
+                            backref=db.backref('user', lazy='joined'))
 
 
 # Define the UserRoles association table
-class UserRoles(db.Model):
-    __tablename__ = 'user_roles'
+class UserRole(db.Model):
+    __tablename__ = 'user_role'
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.BIGINT(),
                         db.ForeignKey('users.id', ondelete='CASCADE'))

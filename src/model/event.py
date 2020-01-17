@@ -11,13 +11,23 @@ session = db.session
 
 
 class Event(db.Model):
-    __tablename__ = 'Event'
+    __tablename__ = 'event'
     id = db.Column(db.BIGINT(), primary_key=True)
-    name = db.Column(db.String(), unique=True)
-    sesPerWeek = db.Column(db.Integer())
-    numOfWeek = db.Column(Integer())
-    location = db.Column(String())
-    createdBy = db.Column(String())
+    name = db.Column(db.String())
+    created_by = db.Column(String())
+    date_time_start = db.Column(db.DateTime())
+    date_time_end = db.Column(db.DateTime())
+    roles = db.relationship('location',
+                            secondary='event_location',
+                            backref=db.backref('event', lazy='joined'))
+
+class EventLocation(db.Model):
+    __tablename__ = 'event_location'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    event_id = db.Column(db.BIGINT(),
+                        db.ForeignKey('event.id', ondelete='CASCADE'))
+    location_id = db.Column(db.Integer(),
+                        db.ForeignKey('location.id', ondelete='CASCADE'))
 
 
 class EventSchema(ModelSchema):
