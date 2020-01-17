@@ -25,15 +25,14 @@ class User(db.Model):
                             secondary='user_role',
                             backref=db.backref('user', lazy='joined'))
 
-
 # Define the UserRoles association table
 class UserRole(db.Model):
     __tablename__ = 'user_role'
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.BIGINT(),
-                        db.ForeignKey('users.id', ondelete='CASCADE'))
+                        db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(),
-                        db.ForeignKey('roles.id', ondelete='CASCADE'))
+                        db.ForeignKey('role.id', ondelete='CASCADE'))
 
 
 class UserSchema(ModelSchema):

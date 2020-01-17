@@ -33,4 +33,3 @@ def compare_features(features):
 
     # TODO: Return user 
     #return get_attendee_by_id(matches_sorted[0][1]['attendee_id'])
-

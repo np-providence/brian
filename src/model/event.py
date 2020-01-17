@@ -28,8 +28,7 @@ class EventLocation(db.Model):
                         db.ForeignKey('event.id', ondelete='CASCADE'))
     location_id = db.Column(db.Integer(),
                         db.ForeignKey('location.id', ondelete='CASCADE'))
-
-
+    
 class EventSchema(ModelSchema):
     class Meta:
         model = Event

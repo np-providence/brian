@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity)
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_migrate import Migrate
 from loguru import logger
 import face_recognition
 import json
@@ -12,16 +13,19 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
+from model.attendee import add_attendee, get_attendee, AttendeeSchema
 from model.features import add_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from common.common import gen_hash, db
+from common.seed import seed_attendee, seed_user, seed_event, seed_roles
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
 db.init_app(app)
 
+migrate = Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
 
@@ -32,8 +36,28 @@ db.create_all(app=app)
 def seed():
     print('SEED: Seeding DB...')
     seed_roles()
+    seed_attendee()
     seed_user()
     seed_event()
+
+
+@app.route("/api/attendee")
+def attendee_get():
+    email = request.args.get('email')
+    result = get_attendee(email)
+    attendee_schema = AttendeeSchema()
+    if result is not None:
+        return attendee_schema.dump(result), 200
+    return 'Attendee not found', 400
+
+
+@app.route("/api/attendee", methods=['POST'])
+def attendee_post():
+    data = request.get_json()
+    result = add_attendee(data)
+    if result:
+        return 'Attendee Sucessfully added', 200
+    return 'Failed to add Attendee', 400
 
 @app.route("/api/camera", methods=['POST'])
 def camera_post():
