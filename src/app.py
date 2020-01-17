@@ -14,7 +14,7 @@ from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
 from model.attendee import add_attendee, get_attendee, AttendeeSchema
-from model.features import add_features
+from model.feature import add_features
 from model.camera import add_camera, get_camera
 from model.user import add_user, get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 from flask_sqlalchemy import SQLAlchemy
 
-from .features import add_features, generate_features
+from .feature import add_features, generate_features
 from .role import role_schema, get_user_roles, Role
 from common.common import gen_hash, db
 
@@ -21,9 +21,10 @@ class User(db.Model):
     name = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
-    roles = db.relationship('role',
+    roles = db.relationship('Role',
                             secondary='user_role',
                             backref=db.backref('user', lazy='joined'))
+
 
 # Define the UserRoles association table
 class UserRole(db.Model):
@@ -46,11 +47,12 @@ user_schemas = UserSchema(many=True)
 
 class UserRoleSchema(ModelSchema):
     class Meta:
-        model = UserRoles
+        model = UserRole
 
 
 user_role_schema = UserRoleSchema()
 user_role_schemas = UserRoleSchema(many=True)
+
 
 def add_user(data):
     didSucceed = False
@@ -82,6 +84,7 @@ def add_user(data):
     finally:
         session.close()
         return didSucceed
+
 
 def get_user(email):
     logger.info("Attempting to get user")

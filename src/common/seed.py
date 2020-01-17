@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from model.features import add_features
+from model.feature import add_features
 from model.user import add_user
 from model.role import add_roles
 from model.event import add_event

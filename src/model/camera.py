@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean, BIGINT
 from marshmallow_sqlalchemy import ModelSchema
 
-from .features import add_features
+from .feature import add_features
 from common.common import db
 
 session = db.session
