@@ -59,15 +59,11 @@ def add_user(data):
     hash_id = gen_hash()
     new_user = User(id=hash_id,
                     name=data['name'],
-                    isAdmin=data['isAdmin'],
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
     role = None
-    if data['isAdmin']:
-        role = session.query(Role).filter_by(name='Admin').first()
-    else:
-        role = session.query(Role).filter_by(name='User').first()
+    role = session.query(Role).filter_by(name='User').first()
     print(role)
     new_user.roles = [
         role,

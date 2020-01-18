@@ -55,39 +55,39 @@ def generateFeaturesFromBase64(arrOBase64):
 
 def generate_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
-    if featuresArr != []:
-        feature_id = genhash(data["features"])
-        features = Features(id=feature_id,
-                            attendee_id=data["attendee_id"],
-                            eventowner_id=data["eventowner_id"],
-                            feat=featuresArr)
-        return features
-    else:
-        return featuresArr
+    # if featuresArr != []:
+    #     feature_id = genhash(data["features"])
+    #     features = Features(id=feature_id,
+    #                         attendee_id=data["attendee_id"],
+    #                         eventowner_id=data["eventowner_id"],
+    #                         feat=featuresArr)
+    #     return features
+    # else:
+    #     return featuresArr
 
 
 def add_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
-    success = True
-    if featuresArr != []:
-        fId = genhash(data["features"])
-        features = Features(id=fId,
-                            attendee_id=data["id"],
-                            eventowner_id=data["eventowner_id"],
-                            feat=featuresArr)
-        session.add(features)
-        try:
-            session.commit()
-        except Exception as e:
-            print(e)
-            success = False
-            session.rollback()
-            raise
-        finally:
-            session.close()
-            return success
-    else:
-        return False
+    # success = True
+    # if featuresArr != []:
+    #     fId = genhash(data["features"])
+    #     features = Features(id=fId,
+    #                         attendee_id=data["id"],
+    #                         eventowner_id=data["eventowner_id"],
+    #                         feat=featuresArr)
+    #     session.add(features)
+    #     try:
+    #         session.commit()
+    #     except Exception as e:
+    #         print(e)
+    #         success = False
+    #         session.rollback()
+    #         raise
+    #     finally:
+    #         session.close()
+    #         return success
+    # else:
+    #     return False
 
 
 def get_all_features():

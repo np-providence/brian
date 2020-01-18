@@ -43,10 +43,10 @@ def add_event(data):
     hash_id = gen_hash()
     new_event = Event(id=hash_id,
                       name=data['name'],
-                      sesPerWeek=data['sessionPerWeek'],
-                      numOfWeek=data['numberOfWeeks'],
-                      location=data['location'],
-                      createdBy=data['createdBy'])
+                      created_by=data['createdBy'],
+                      date_time_start=data['dateTimeStart'],
+                      date_time_end=data['dateTimeEnd'],
+                      locations=data['locations'])
     session.add(new_event)
     logger.info('Attempting to add event')
     try:
