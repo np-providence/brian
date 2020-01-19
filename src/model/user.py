@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 from flask_sqlalchemy import SQLAlchemy
 
-from .features import add_features, generate_features
+from .feature import add_features, generate_features
 from .role import role_schema, get_user_roles, Role
 from common.common import gen_hash, db
 
@@ -16,25 +16,24 @@ session = db.session
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.BIGINT(), primary_key=True)
     name = db.Column(db.String())
-    isAdmin = db.Column(db.Boolean())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
     roles = db.relationship('Role',
-                            secondary='user_roles',
-                            backref=db.backref('users', lazy='joined'))
+                            secondary='user_role',
+                            backref=db.backref('user', lazy='joined'))
 
 
 # Define the UserRoles association table
-class UserRoles(db.Model):
-    __tablename__ = 'user_roles'
+class UserRole(db.Model):
+    __tablename__ = 'user_role'
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.BIGINT(),
-                        db.ForeignKey('users.id', ondelete='CASCADE'))
+                        db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(),
-                        db.ForeignKey('roles.id', ondelete='CASCADE'))
+                        db.ForeignKey('role.id', ondelete='CASCADE'))
 
 
 class UserSchema(ModelSchema):
@@ -48,7 +47,7 @@ user_schemas = UserSchema(many=True)
 
 class UserRoleSchema(ModelSchema):
     class Meta:
-        model = UserRoles
+        model = UserRole
 
 
 user_role_schema = UserRoleSchema()
@@ -60,15 +59,11 @@ def add_user(data):
     hash_id = gen_hash()
     new_user = User(id=hash_id,
                     name=data['name'],
-                    isAdmin=data['isAdmin'],
                     email=data['email'],
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
     role = None
-    if data['isAdmin']:
-        role = session.query(Role).filter_by(name='Admin').first()
-    else:
-        role = session.query(Role).filter_by(name='User').first()
+    role = session.query(Role).filter_by(name='User').first()
     print(role)
     new_user.roles = [
         role,

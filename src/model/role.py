@@ -7,7 +7,7 @@ from common.common import db
 session = db.session
 
 class Role(db.Model):
-    __tablename__ = 'roles'
+    __tablename__ = 'role'
     id = db.Column(db.BIGINT(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
 
@@ -41,7 +41,7 @@ def get_user_roles(user_id):
             (UserRoles.user_id == user_id)
             & (UserRoles.role_id == Role.id)).first()
         role = None
-        for id in user_data.roles:
+        for id in user_data.role:
             role = role_schema.dump(id)
         return role['name']
     except Exception as e:

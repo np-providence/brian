@@ -13,19 +13,21 @@ from common.common import db
 session = db.session
 
 
-class Features(db.Model):
-    __tablename__ = 'Features'
+# TODO: This file will not compile, need to rewrite
+class Feature(db.Model):
+    __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
-    attendee_id = db.Column(db.String())
-    eventowner_id = db.Column(db.String())
-    feat = db.Column(db.ARRAY(db.String()))
+    user_id = db.Column(db.BIGINT(), db.ForeignKey('user.id'))
+    face_encoding = db.Column(db.String())
+    date_time_recorded = db.Column(db.DateTime())
 
-class FeaturesSchema(ModelSchema):
+
+class FeatureSchema(ModelSchema):
     class Meta:
-        model = Features
+        model = Feature
 
 
-feature_schemas = FeaturesSchema(many=True)
+feature_schemas = FeatureSchema(many=True)
 
 
 def genhash(features):
@@ -53,39 +55,39 @@ def generateFeaturesFromBase64(arrOBase64):
 
 def generate_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
-    if featuresArr != []:
-        feature_id = genhash(data["features"])
-        features = Features(id=feature_id,
-                            attendee_id=data["attendee_id"],
-                            eventowner_id=data["eventowner_id"],
-                            feat=featuresArr)
-        return features
-    else:
-        return featuresArr
+    # if featuresArr != []:
+    #     feature_id = genhash(data["features"])
+    #     features = Features(id=feature_id,
+    #                         attendee_id=data["attendee_id"],
+    #                         eventowner_id=data["eventowner_id"],
+    #                         feat=featuresArr)
+    #     return features
+    # else:
+    #     return featuresArr
 
 
 def add_features(data):
     featuresArr = generateFeaturesFromBase64(data['features'])
-    success = True
-    if featuresArr != []:
-        fId = genhash(data["features"])
-        features = Features(id=fId,
-                            attendee_id=data["id"],
-                            eventowner_id=data["eventowner_id"],
-                            feat=featuresArr)
-        session.add(features)
-        try:
-            session.commit()
-        except Exception as e:
-            print(e)
-            success = False
-            session.rollback()
-            raise
-        finally:
-            session.close()
-            return success
-    else:
-        return False
+    # success = True
+    # if featuresArr != []:
+    #     fId = genhash(data["features"])
+    #     features = Features(id=fId,
+    #                         attendee_id=data["id"],
+    #                         eventowner_id=data["eventowner_id"],
+    #                         feat=featuresArr)
+    #     session.add(features)
+    #     try:
+    #         session.commit()
+    #     except Exception as e:
+    #         print(e)
+    #         success = False
+    #         session.rollback()
+    #         raise
+    #     finally:
+    #         session.close()
+    #         return success
+    # else:
+    #     return False
 
 
 def get_all_features():

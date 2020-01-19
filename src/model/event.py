@@ -7,17 +7,30 @@ from loguru import logger
 
 from common.common import gen_hash, db
 
+from model.location import Location
+
 session = db.session
 
 
 class Event(db.Model):
-    __tablename__ = 'Event'
+    __tablename__ = 'event'
     id = db.Column(db.BIGINT(), primary_key=True)
-    name = db.Column(db.String(), unique=True)
-    sesPerWeek = db.Column(db.Integer())
-    numOfWeek = db.Column(Integer())
-    location = db.Column(String())
-    createdBy = db.Column(String())
+    name = db.Column(db.String())
+    created_by = db.Column(String())
+    date_time_start = db.Column(db.DateTime())
+    date_time_end = db.Column(db.DateTime())
+    locations = db.relationship('Location',
+                                secondary='event_location',
+                                backref=db.backref('event', lazy='joined'))
+
+
+class EventLocation(db.Model):
+    __tablename__ = 'event_location'
+    id = db.Column(db.BIGINT(), primary_key=True)
+    event_id = db.Column(db.BIGINT(),
+                         db.ForeignKey('event.id', ondelete='CASCADE'))
+    location_id = db.Column(db.Integer(),
+                            db.ForeignKey('location.id', ondelete='CASCADE'))
 
 
 class EventSchema(ModelSchema):
@@ -30,10 +43,10 @@ def add_event(data):
     hash_id = gen_hash()
     new_event = Event(id=hash_id,
                       name=data['name'],
-                      sesPerWeek=data['sessionPerWeek'],
-                      numOfWeek=data['numberOfWeeks'],
-                      location=data['location'],
-                      createdBy=data['createdBy'])
+                      created_by=data['createdBy'],
+                      date_time_start=data['dateTimeStart'],
+                      date_time_end=data['dateTimeEnd'],
+                      locations=data['locations'])
     session.add(new_event)
     logger.info('Attempting to add event')
     try:
