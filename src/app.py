@@ -38,8 +38,6 @@ def seed():
     seed_event()
 
 
-
-
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
@@ -67,15 +65,15 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-@admin_required
+#@admin_required
 def event_get():
     current_user = get_jwt_identity()
     logger.debug(current_user)
     name = request.args.get('name')
     result = get_event(name)
-    event_schema = EventSchema()
+    event_schema = EventSchema(many=True)
     if result is not None:
-        return event_schema.dump(result), 200
+        return jsonify(event_schema.dump(result)), 200
     return 'Event not found', 400
 
 

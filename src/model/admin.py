@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import ModelSchema
-from.user import User
+from .user import User
 from common.common import gen_hash, db
 
 session = db.session

@@ -37,9 +37,9 @@ def seed_event():
     data = {
         "name": "Capstone",
         "createdBy": "Saitama",
-        "dateTimeStart": "2000",
-        "dateTimeEnd": "2400",
-        "locations": ["IMH"],
+        "dateTimeStart": "Jun 1 2019 1:30PM",
+        "dateTimeEnd": "Jun 1 2019 2:30PM",
+        "locations": "IMH",
     }
     result = add_event(data)
     if result:

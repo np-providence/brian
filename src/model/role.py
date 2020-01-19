@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import ModelSchema
-
+from loguru import logger
 from common.common import db
 session = db.session
 
