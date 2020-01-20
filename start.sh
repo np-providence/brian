@@ -5,13 +5,13 @@ DIRECTORY="migrations/"
 
 if [ ! -d $DIRECTORY ]; then
   echo "$DIRECTORY does not exists"
-  echo "Creating migrations folder"
+  echo "Creating migrations directory..."
   flask db init
 fi
 
-echo "Doing migrations if any"
+echo "Migrating DB..."
 flask db migrate
-echo "Upgrading database to the latest migration"
+echo "Upgrading DB..."
 flask db upgrade
 
 flask seed

@@ -34,9 +34,10 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
+    seed_locations()
+
     seed_users()
     seed_event()
-    seed_locations()
 
 
 @app.route("/api/identify", methods=['POST'])
