@@ -54,14 +54,11 @@ event_location_schema = EventLocationSchema(many=True)
 def add_event(data):
     didSucceed = False
     hash_id = gen_hash()
-    dateTimeStart = datetime.strptime(data['dateTimeStart'],
-                                      '%b %d %Y %I:%M%p')
-    dateTimeEnd = datetime.strptime(data['dateTimeEnd'], '%b %d %Y %I:%M%p')
     new_event = Event(id=hash_id,
                       name=data['name'],
                       created_by=data['createdBy'],
-                      date_time_start=dateTimeStart,
-                      date_time_end=dateTimeEnd)
+                      date_time_start=data['dateTimeStart'],
+                      date_time_end=data['dateTimeEnd'])
 
     location_arr = [
         session.query(Location).filter_by(name=location).first()
