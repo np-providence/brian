@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy.fields import Nested
 from loguru import logger
 from datetime import datetime
 
@@ -36,6 +37,8 @@ class EventLocation(db.Model):
 
 
 class EventSchema(ModelSchema):
+    locations = Nested(LocationSchema, many=True)
+
     class Meta:
         model = Event
 
