@@ -22,4 +22,5 @@ services:
     links:
       - postgresdb:postgresdb
     command: ["sh", "start.sh"]
-        
+    environment:
+      DB_URL: 'postgresql://postgres:mysecretpassword@postgresdb/brian'

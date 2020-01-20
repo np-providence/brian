@@ -14,11 +14,11 @@ from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
 from model.feature import add_features
-from model.user import add_user, get_user, UserSchema, authenticate_user, User
+from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
 from common.common import gen_hash, db
-from common.seed import seed_user, seed_event, seed_roles, seed_locations
+from common.seed import seed_users, seed_event, seed_locations
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -34,7 +34,6 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
-    seed_roles()
     seed_user()
     seed_event()
     seed_locations()
@@ -97,13 +96,13 @@ def event_get_all():
     return 'Event not found', 400
 
 
-@app.route("/user/signup", methods=['POST'])
-def signup():
-    data = request.get_json()
-    result = add_user(data)
-    if result:
-        return 'User Sucessfully added', 200
-    return 'Failed to add user', 400
+#  @app.route("/user/signup", methods=['POST'])
+#  def signup():
+    #  data = request.get_json()
+    #  result = add_user(data)
+    #  if result:
+        #  return 'User Sucessfully added', 200
+    #  return 'Failed to add user', 400
 
 
 @app.route("/user/login", methods=['GET'])

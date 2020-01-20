@@ -1,6 +1,9 @@
-from.user import User
+import bcrypt
+from .user import User 
 from common.common import gen_hash, db
 from marshmallow_sqlalchemy import ModelSchema
+
+from loguru import logger
 
 session = db.session
 
@@ -18,6 +21,25 @@ class StudentSchema(ModelSchema):
     class Meta:
         model = Student
 
+def add_student(data): 
+    new_student = Student(id=gen_hash(),
+                    name=data['name'],
+                    email=data['email'],
+                    role='student',
+                    passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
+                                           bcrypt.gensalt()).decode('utf-8'))
+    session.add(new_student)
+    try: 
+        session.commit()
+        logger.info('Student user successfully added')
+    except Exception as e:
+        logger.error(e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return True 
+
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.BIGINT(), primary_key=True)
@@ -27,6 +49,20 @@ class CourseSchema(ModelSchema):
     class Meta:
         model = Course
 
+def add_course(course_name):
+    new_course = Course(id=gen_hash(), name=course_name)
+    session.add(new_course)
+    try: 
+        session.commmit()
+        logger.info('Course successfully added')
+    except Exception as e:
+        logger.error(e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return true
+
 class Year(db.Model):
     __tablename__ = 'year'
     id = db.Column(db.BIGINT(), primary_key=True)
@@ -35,4 +71,19 @@ class Year(db.Model):
 class YearSchema(ModelSchema):
     class Meta:
         model = Year
+
+def add_year(year_name):
+    new_year = Year(id=gen_hash(), name=year_name)
+    session.add(new_year)
+    try: 
+        session.commmit()
+        logger.info('Year successfully added')
+    except Exception as e:
+        logger.error(e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return true
+
 

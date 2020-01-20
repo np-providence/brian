@@ -1,5 +1,8 @@
 from marshmallow_sqlalchemy import ModelSchema
-from .user import User
+import bcrypt
+from loguru import logger
+
+from .user import User 
 from common.common import gen_hash, db
 
 session = db.session
@@ -16,4 +19,21 @@ class AdminSchema(ModelSchema):
     class Meta:
         model = Admin
 
-
+def add_admin(data): 
+    new_admin = Admin(id=gen_hash(),
+                    name=data['name'],
+                    email=data['email'],
+                    role='admin',
+                    passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
+                                           bcrypt.gensalt()).decode('utf-8'))
+    session.add(new_admin)
+    try: 
+        session.commit()
+        logger.info('Admin user successfully added')
+    except Exception as e:
+        logger.error(e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return True 

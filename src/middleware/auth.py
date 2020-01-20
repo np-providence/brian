@@ -5,7 +5,7 @@ from flask_jwt_extended import (JWTManager, verify_jwt_in_request,
                                 create_access_token, get_jwt_claims,
                                 get_jwt_identity)
 
-from model.role import get_user_roles
+from model.user import get_user_by_id 
 
 
 def admin_required(fn):
@@ -16,8 +16,8 @@ def admin_required(fn):
         if not user_id:
             flask.abort(400)
         try:
-            res = get_user_roles(user_id)
-            if res != 'Admin':
+            res = get_user_by_id(user_id)
+            if res.role != 'admin':
                 return jsonify('Only admin is allowed'), 401
             else:
                 return fn(*args, **kwargs)
