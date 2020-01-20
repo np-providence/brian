@@ -4,7 +4,7 @@ export FLASK_DEBUG=1
 DIRECTORY="migrations/"
 
 if [ ! -d $DIRECTORY ]; then
-  echo "$DIRECTORY does not exists"
+  echo "$DIRECTORY does not exist"
   echo "Creating migrations directory..."
   flask db init
 fi
