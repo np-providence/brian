@@ -30,7 +30,7 @@ def seed_users():
         'name': 'Mr Toh',
         'password': 'password',
     }
-    if add_event_owner(admin) is None:
+    if add_event_owner(event_owner) is None:
         logger.error('Could not seed event owner user')
     logger.debug('Done seeding.')
 
