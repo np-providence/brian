@@ -38,7 +38,6 @@ class EventLocation(db.Model):
 
 class EventSchema(ModelSchema):
     locations = Nested(LocationSchema, many=True)
-
     class Meta:
         model = Event
 
