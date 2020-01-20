@@ -60,8 +60,12 @@ def add_event(data):
                       created_by=data['createdBy'],
                       date_time_start=dateTimeStart,
                       date_time_end=dateTimeEnd)
-    location = Location(name=data['locations'])
-    new_event.locations.append(location)
+
+    location_arr = [
+        session.query(Location).filter_by(name=location).first()
+        for location in data['locations']
+    ]
+    new_event.locations = location_arr
     session.add(new_event)
     logger.info('Attempting to add event')
     try:
@@ -79,13 +83,7 @@ def add_event(data):
 def get_event(name):
     logger.info("Attempting to get event")
     try:
-        events = session.query(Event).all()
-        location_schema = LocationSchema()
-        for event in events:
-            for location in event.locations:
-                print('{} {}'.format(location_schema.dump(location),
-                                     event_schema.dump(event)))
-
+        events = session.query(Event).filter_by(name=name).all()
         return events
     except Exception as e:
         print(e)

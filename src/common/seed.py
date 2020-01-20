@@ -4,6 +4,7 @@ from model.feature import add_features
 from model.user import add_user
 from model.role import add_roles
 from model.event import add_event
+from model.location import add_location
 from loguru import logger
 import base64
 
@@ -39,10 +40,21 @@ def seed_event():
         "createdBy": "Saitama",
         "dateTimeStart": "Jun 1 2019 1:30PM",
         "dateTimeEnd": "Jun 1 2019 2:30PM",
-        "locations": "IMH",
+        "locations": ["IMH", "Graveyard"],
     }
     result = add_event(data)
     if result:
         logger.success('Event Sucessfully added')
     else:
         logger.error('Failed to add event')
+
+
+def seed_locations():
+    logger.debug('Attempting to seed event')
+    data = [{'name': 'IMH'}, {'name': 'Graveyard'}]
+    for row in data:
+        result = add_location(row)
+        if result:
+            logger.success('{} sucessfully added', row['name'])
+        else:
+            logger.error('Failed to add {} ', row['name'])
