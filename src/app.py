@@ -34,7 +34,7 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
-    seed_user()
+    seed_users()
     seed_event()
     seed_locations()
 
