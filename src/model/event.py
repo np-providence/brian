@@ -45,8 +45,8 @@ def add_event(data):
                       name=data['name'],
                       created_by=data['createdBy'],
                       date_time_start=data['dateTimeStart'],
-                      date_time_end=data['dateTimeEnd'],
-                      locations=data['locations'])
+                      date_time_end=data['dateTimeEnd']
+                    )
     session.add(new_event)
     logger.info('Attempting to add event')
     try:

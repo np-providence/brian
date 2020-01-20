@@ -9,11 +9,9 @@ from flask_jwt_extended import (create_access_token)
 from flask_sqlalchemy import SQLAlchemy
 
 from .feature import add_features, generate_features
-from .role import role_schema, get_user_roles, Role
 from common.common import gen_hash, db
 
 session = db.session
-
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -21,19 +19,11 @@ class User(db.Model):
     name = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
-    roles = db.relationship('Role',
-                            secondary='user_role',
-                            backref=db.backref('user', lazy='joined'))
-
-
-# Define the UserRoles association table
-class UserRole(db.Model):
-    __tablename__ = 'user_role'
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.BIGINT(),
-                        db.ForeignKey('user.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer(),
-                        db.ForeignKey('role.id', ondelete='CASCADE'))
+    role = db.Column(db.String())
+    __mapper_args__ = {
+        'polymorphic_identity':'user',
+        'polymorphic_on': role
+    }
 
 
 class UserSchema(ModelSchema):
@@ -45,41 +35,13 @@ user_schema = UserSchema()
 user_schemas = UserSchema(many=True)
 
 
-class UserRoleSchema(ModelSchema):
-    class Meta:
-        model = UserRole
-
-
-user_role_schema = UserRoleSchema()
-user_role_schemas = UserRoleSchema(many=True)
-
-
-def add_user(data):
-    didSucceed = False
-    hash_id = gen_hash()
-    new_user = User(id=hash_id,
-                    name=data['name'],
-                    email=data['email'],
-                    passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
-                                           bcrypt.gensalt()).decode('utf-8'))
-    role = None
-    role = session.query(Role).filter_by(name='User').first()
-    print(role)
-    new_user.roles = [
-        role,
-    ]
-    session.add(new_user)
+def get_user_by_id(id):
+    logger.info("Attempting to get user")
     try:
-        session.commit()
-        logger.debug("User successfully added")
-        didSucceed = True
+        user = session.query(User).filter_by(id=id).first()
+        return user
     except Exception as e:
-        print("Error ==> ", e)
-        session.rollback()
-        raise
-    finally:
-        session.close()
-        return didSucceed
+        print(e)
 
 
 def get_user(email):
