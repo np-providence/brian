@@ -53,7 +53,7 @@ def add_course(course_name):
     new_course = Course(id=gen_hash(), name=course_name)
     session.add(new_course)
     try: 
-        session.commmit()
+        session.commit()
         logger.info('Course successfully added')
     except Exception as e:
         logger.error(e)
@@ -61,7 +61,7 @@ def add_course(course_name):
         raise
     finally:
         session.close()
-        return true
+        return True 
 
 class Year(db.Model):
     __tablename__ = 'year'
@@ -76,7 +76,7 @@ def add_year(year_name):
     new_year = Year(id=gen_hash(), name=year_name)
     session.add(new_year)
     try: 
-        session.commmit()
+        session.commit()
         logger.info('Year successfully added')
     except Exception as e:
         logger.error(e)
@@ -84,6 +84,6 @@ def add_year(year_name):
         raise
     finally:
         session.close()
-        return true
+        return True 
 
 

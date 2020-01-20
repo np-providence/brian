@@ -16,8 +16,9 @@ from config import ConfigClass
 from model.feature import add_features
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
+from model.location import LocationSchema
 from common.common import gen_hash, db
-from common.seed import seed_users, seed_event 
+from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -33,8 +34,13 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
+    seed_years()
+    seed_courses()
+    seed_locations()
+
     seed_users()
     seed_event()
+
 
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
@@ -63,15 +69,23 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-@admin_required
+#@admin_required
 def event_get():
-    current_user = get_jwt_identity()
-    logger.debug(current_user)
+    event_schemas = EventSchema(many=True)
+    event_schema = EventSchema()
+    location_schema = LocationSchema()
+
     name = request.args.get('name')
     result = get_event(name)
-    event_schema = EventSchema()
+
     if result is not None:
-        return event_schema.dump(result), 200
+        for event in result:
+            for location in event.locations:
+                print('{} {}'.format(location_schema.dump(location),
+                                     event_schema.dump(event)))
+
+        return jsonify(event_schemas.dump(result)), 200
+
     return 'Event not found', 400
 
 

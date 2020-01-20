@@ -1,4 +1,3 @@
-migrations/
 # Created by https://www.gitignore.io/api/go,python
 # Edit at https://www.gitignore.io/?templates=go,python
 .env
