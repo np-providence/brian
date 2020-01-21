@@ -38,7 +38,6 @@ def genhash(features):
 def add_features(data, face_encoding):
     didSucceed = False
     hash_id = genhash(face_encoding)
-    logger.debug(face_encoding[0])
     new_features = Feature(id=hash_id,
                            user_id=data['userid'],
                            face_encoding=face_encoding[0])
@@ -55,20 +54,12 @@ def add_features(data, face_encoding):
         return didSucceed
 
 
-def get_all_features():
-    features = session.query(Feature).all()
-    results = feature_schemas.dump(features)
-    for record in results:
-        # featList = [[1,2], [3,4]]
-        featList = record['feat']
-        converted = []
-        for feat in featList:
-            # feat = [1,2]
-            featArr = np.asarray(feat)
-            # Convert feat into an array and loop through the invidual elements to change the type
-            convertStrToNum = [
-                float(numeric_string) for numeric_string in featArr
-            ]
-            converted.append(convertStrToNum)
-        record['feat'] = converted
-    return results
+def get_all_features(userid):
+    logger.info("Attempting to get list of features")
+    try:
+        results = session.query(Feature).filter_by(
+            user_id=userid).all()
+        print(results)
+        return results
+    except Exception as e:
+        print(e)
