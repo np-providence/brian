@@ -101,11 +101,11 @@ def event_get_all():
 
 #  @app.route("/user/signup", methods=['POST'])
 #  def signup():
-    #  data = request.get_json()
-    #  result = add_user(data)
-    #  if result:
-        #  return 'User Sucessfully added', 200
-    #  return 'Failed to add user', 400
+#  data = request.get_json()
+#  result = add_user(data)
+#  if result:
+#  return 'User Sucessfully added', 200
+#  return 'Failed to add user', 400
 
 
 @app.route("/user/login", methods=['GET'])
