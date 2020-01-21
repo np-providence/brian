@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from loguru import logger
 from marshmallow_sqlalchemy import ModelSchema
 from PIL import Image
 import numpy as np
@@ -13,12 +14,11 @@ from common.common import db
 session = db.session
 
 
-# TODO: This file will not compile, need to rewrite
 class Feature(db.Model):
     __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
     user_id = db.Column(db.BIGINT(), db.ForeignKey('user.id'))
-    face_encoding = db.Column(db.String())
+    face_encoding = db.Column(db.ARRAY(db.Numeric))
     date_time_recorded = db.Column(db.DateTime())
 
 
@@ -35,63 +35,28 @@ def genhash(features):
     return abs(hash(a))
 
 
-def generateFeaturesFromBase64(arrOBase64):
-    features = []
-    for index, image in enumerate(arrOBase64):
-        splitImage = image.split(";base64,")
-        imageType = splitImage[0].split("/")[1]
-        imageStr = splitImage[1]
-        prefix = "data:image/" + imageType + ";base64"
-        imageData = io.BytesIO(b64decode(re.sub(prefix, '', imageStr)))
-        face_image = face_recognition.load_image_file(imageData)
-        face_encodings = face_recognition.face_encodings(face_image)
-        if face_encodings != []:
-            convertNumToString = [
-                str(num_element) for num_element in face_encodings[0]
-            ]
-            features.append(convertNumToString)
-    return features
-
-
-def generate_features(data):
-    featuresArr = generateFeaturesFromBase64(data['features'])
-    # if featuresArr != []:
-    #     feature_id = genhash(data["features"])
-    #     features = Features(id=feature_id,
-    #                         attendee_id=data["attendee_id"],
-    #                         eventowner_id=data["eventowner_id"],
-    #                         feat=featuresArr)
-    #     return features
-    # else:
-    #     return featuresArr
-
-
-def add_features(data):
-    featuresArr = generateFeaturesFromBase64(data['features'])
-    # success = True
-    # if featuresArr != []:
-    #     fId = genhash(data["features"])
-    #     features = Features(id=fId,
-    #                         attendee_id=data["id"],
-    #                         eventowner_id=data["eventowner_id"],
-    #                         feat=featuresArr)
-    #     session.add(features)
-    #     try:
-    #         session.commit()
-    #     except Exception as e:
-    #         print(e)
-    #         success = False
-    #         session.rollback()
-    #         raise
-    #     finally:
-    #         session.close()
-    #         return success
-    # else:
-    #     return False
+def add_features(data, face_encoding):
+    didSucceed = False
+    hash_id = genhash(face_encoding)
+    logger.debug(face_encoding[0])
+    new_features = Feature(id=hash_id,
+                           user_id=data['userid'],
+                           face_encoding=face_encoding[0])
+    session.add(new_features)
+    try:
+        session.commit()
+        didSucceed = True
+    except Exception as e:
+        print(e)
+        session.rollback()
+        raise
+    finally:
+        session.close()
+        return didSucceed
 
 
 def get_all_features():
-    features = session.query(Features).all()
+    features = session.query(Feature).all()
     results = feature_schemas.dump(features)
     for record in results:
         # featList = [[1,2], [3,4]]
