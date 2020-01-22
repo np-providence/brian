@@ -16,8 +16,9 @@ session = db.session
 class Event(db.Model):
     __tablename__ = 'event'
     id = db.Column(db.BIGINT(), primary_key=True)
+    created_by = db.Column(db.String(),
+                           db.ForeignKey('user.id', ondelete='CASCADE'))
     name = db.Column(db.String())
-    created_by = db.Column(db.String())
     date_time_start = db.Column(db.DateTime())
     date_time_end = db.Column(db.DateTime())
     locations = db.relationship('Location',
@@ -38,6 +39,7 @@ class EventLocation(db.Model):
 
 class EventSchema(ModelSchema):
     locations = Nested(LocationSchema, many=True)
+
     class Meta:
         model = Event
 

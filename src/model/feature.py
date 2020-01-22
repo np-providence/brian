@@ -18,7 +18,7 @@ class Feature(db.Model):
     __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
     user_id = db.Column(db.BIGINT(), db.ForeignKey('user.id'))
-    face_encoding = db.Column(db.ARRAY(db.Numeric))
+    face_encoding = db.Column(db.ARRAY(db.Numeric()))
     date_time_recorded = db.Column(db.DateTime())
 
 
