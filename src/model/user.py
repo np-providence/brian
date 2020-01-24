@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 from flask_sqlalchemy import SQLAlchemy
 
-from .feature import add_features, generate_features
 from common.common import gen_hash, db
 
 session = db.session

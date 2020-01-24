@@ -13,7 +13,6 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
-from model.feature import add_features
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
@@ -30,7 +29,6 @@ CORS(app)
 
 db.create_all(app=app)
 
-
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
@@ -41,12 +39,10 @@ def seed():
     seed_users()
     seed_event()
 
-
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
     return identify_faces(data['faces'])
-
 
 @app.route("/api/features", methods=['POST'])
 def features_post():

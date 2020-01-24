@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from model.feature import add_features
 from model.admin import add_admin 
 from model.student import add_student, add_course, add_year
 from model.event_owner import add_event_owner
