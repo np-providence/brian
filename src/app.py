@@ -13,6 +13,8 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
+from model.feature import add_feature
+from model.student import add_student
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
@@ -53,6 +55,33 @@ def features_post():
     except Exception as e:
         logger.error(e)
         return 500, 'an error has occured'
+
+# Enrols a new student user
+@app.route("/api/enrol", methods=['POST'])
+def enrol_post():
+    data = request.get_json()
+    # TODO: Check if student exists (via email)
+    # Add student
+    student_data = {
+            'role': 'student',
+            'name': data['name'],
+            'email': data['email'],
+            'password': 'password',
+            }
+    student = add_student(student_data)
+    for face_encoding in data['features']:
+        feature_data = {
+                'user_id': student.id,
+                'face_encoding': face_encoding,
+                'date_time_recorded': data['date_time_recorded'],
+                }
+        # Insert feature
+        try:
+            add_feature(data)
+        except Exception as e:
+            return 'Failed to enrol', 500 
+    return 'Enrolled', 200 
+
 
 
 @app.route("/api/event/new", methods=['POST'])

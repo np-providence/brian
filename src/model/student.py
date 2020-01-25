@@ -38,7 +38,7 @@ def add_student(data):
         raise
     finally:
         session.close()
-        return True 
+        return new_student 
 
 class Course(db.Model):
     __tablename__ = 'course'
