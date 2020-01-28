@@ -23,21 +23,18 @@ def compare_face(face):
     query_feature = np.asarray(face)
     user_features = get_features() 
 
-    logger.info(user_features)
-
     # Match and sort
-    feature_dataset = list(map(lambda f: f.face_encoding, user_features))
+    feature_dataset = np.array(list(map(lambda f: np.array(f.face_encoding.split(',')).astype(np.float), user_features)))
     match_scores = face_recognition.face_distance(feature_dataset,
                                                   query_feature)
-    matches_sorted = list(zip(match_scores,
-                              user_features)).sort(key=lambda x: x[0],
-                                                   reverse=True)
+    matches_sorted = sorted(list(zip(match_scores,
+                              user_features)),key=(lambda x: x[0]))
 
-    logger.info(matches_sorted)
+    matches_sorted = list(filter(lambda x: x[0] < 0.3, matches_sorted))
 
-    # TODO: Set accuracy threshold and filter
+    if len(matches_sorted) > 0:
+        matched_user = get_user_by_id(matches_sorted[0][1].user_id)
+        return matched_user.name
+    else:
+        return 'Unidentified'
 
-    # TODO: Return identity of user
-    matched = get_user_by_id(matches_sorted[0][1].user_id)
-
-    return "Hello", 200

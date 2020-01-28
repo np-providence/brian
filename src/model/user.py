@@ -35,7 +35,6 @@ user_schemas = UserSchema(many=True)
 
 
 def get_user_by_id(id):
-    logger.info("Attempting to get user")
     try:
         user = session.query(User).filter_by(id=id).first()
         return user
@@ -44,7 +43,6 @@ def get_user_by_id(id):
 
 
 def get_user(email):
-    logger.info("Attempting to get user")
     try:
         user = session.query(User).filter_by(email=email).first()
         return user

@@ -46,7 +46,7 @@ def seed():
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
-    return identify_faces(data['faces'])
+    return jsonify(faces=identify_faces(data['faces'])), 200
 
 @app.route("/api/features", methods=['POST'])
 def features_post():
