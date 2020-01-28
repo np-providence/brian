@@ -16,7 +16,7 @@ session = db.session
 class Event(db.Model):
     __tablename__ = 'event'
     id = db.Column(db.BIGINT(), primary_key=True)
-    created_by = db.Column(db.String(),
+    created_by = db.Column(db.BIGINT(),
                            db.ForeignKey('user.id', ondelete='CASCADE'))
     name = db.Column(db.String())
     date_time_start = db.Column(db.DateTime())
@@ -42,6 +42,7 @@ class EventSchema(ModelSchema):
 
     class Meta:
         model = Event
+        include_fk = True
 
 
 class EventLocationSchema(ModelSchema):
@@ -63,7 +64,7 @@ def add_event(data):
                       date_time_end=data['dateTimeEnd'])
 
     location_arr = [
-        session.query(Location).filter_by(name=location).first()
+        session.query(Location).filter_by(id=location).first()
         for location in data['locations']
     ]
     new_event.locations = location_arr
@@ -85,6 +86,8 @@ def get_event(name):
     logger.info("Attempting to get event")
     try:
         events = session.query(Event).filter_by(name=name).all()
+        for row in events:
+            print(event_schema.dump(row))
         return events
     except Exception as e:
         print(e)

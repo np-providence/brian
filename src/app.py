@@ -18,7 +18,7 @@ from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
 from common.common import gen_hash, db
-from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years
+from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -36,10 +36,8 @@ def seed():
     print('SEED: Seeding DB...')
     seed_years()
     seed_courses()
-    seed_locations()
-
     seed_users()
-    seed_event()
+    seed_eventowner_with_events()
 
 
 @app.route("/api/identify", methods=['POST'])

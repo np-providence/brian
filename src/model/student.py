@@ -25,7 +25,9 @@ class StudentSchema(ModelSchema):
 
 
 def add_student(data):
-    new_student = Student(id=gen_hash(),
+    didSucceed = None
+    hash_id = gen_hash()
+    new_student = Student(id=hash_id,
                           name=data['name'],
                           email=data['email'],
                           role='student',
@@ -36,13 +38,14 @@ def add_student(data):
     try:
         session.commit()
         logger.info('Student user successfully added')
+        didSucceed = hash_id
     except Exception as e:
         logger.error(e)
         session.rollback()
         raise
     finally:
         session.close()
-        return True
+        return didSucceed
 
 
 class Course(db.Model):
