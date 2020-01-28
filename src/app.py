@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity)
 from flask_sqlalchemy import SQLAlchemy
@@ -20,6 +21,7 @@ from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
 from common.common import gen_hash, db
 from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years
+from common.image import decode_image
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -68,19 +70,20 @@ def enrol_post():
             'email': data['email'],
             'password': 'password',
             }
-    student = add_student(student_data)
-    for face_encoding in data['features']:
+    student_id = add_student(student_data)
+    for image in data['images']:
+        face_encodings, num_of_faces = find_faces(image)
         feature_data = {
-                'user_id': student.id,
-                'face_encoding': face_encoding,
-                'date_time_recorded': data['date_time_recorded'],
+                'user_id': student_id,
+                'face_encoding': ','.join(map(str, face_encodings[0])),
+                'date_time_recorded': datetime.utcnow(),
                 }
-        # Insert feature
         try:
-            add_feature(data)
+            add_feature(feature_data)
         except Exception as e:
+            logger.error(e)
             return 'Failed to enrol', 500 
-    return 'Enrolled', 200 
+    return 'Enroled', 200 
 
 
 

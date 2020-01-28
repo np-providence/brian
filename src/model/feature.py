@@ -7,8 +7,9 @@ import io
 import face_recognition
 import re
 from base64 import b64decode
+from loguru import logger
 
-from common.common import db
+from common.common import db, gen_hash
 
 session = db.session
 
@@ -23,18 +24,22 @@ class Feature(db.Model):
 
 class FeatureSchema(ModelSchema):
     class Meta:
+        foreignKey = True
         model = Feature
 
 
 feature_schemas = FeatureSchema(many=True)
 
-def hash_feature(feature):
-    a = tuple(tuple(p) for p in feature)
-    return abs(hash(a))
+#  def hash_feature(feature):
+    #  a = tuple(tuple(p) for p in feature)
+    #  return abs(hash(a))
 
 def add_feature(data):
-    data['id'] = hash_feature(data['face_encoding'])
-    feature = FeatureSchema().load(data)
+    feature = Feature(id= gen_hash(), 
+            user_id=data['user_id'],
+            face_encoding= data['face_encoding'],
+            date_time_recorded= data['date_time_recorded'],
+            ) 
     session.add(feature)
     try:
         session.commit()

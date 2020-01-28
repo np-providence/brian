@@ -22,7 +22,8 @@ class StudentSchema(ModelSchema):
         model = Student
 
 def add_student(data): 
-    new_student = Student(id=gen_hash(),
+    id = gen_hash()
+    new_student = Student(id=id,
                     name=data['name'],
                     email=data['email'],
                     role='student',
@@ -38,7 +39,7 @@ def add_student(data):
         raise
     finally:
         session.close()
-        return new_student 
+        return id 
 
 class Course(db.Model):
     __tablename__ = 'course'
