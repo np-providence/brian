@@ -70,15 +70,14 @@ def seed_eventowner_with_events():
         'name': 'saitama',
         'password': 'password',
     }
-    try:
-        # Add event owner
-        event_owner = add_event_owner(event_owner)
+    # Add event owner
+    event_owner = add_event_owner(event_owner)
+    if event_owner is not None:
         # Get location id [1,2]
         locations = seed_locations()
-        # Finally seed event with event_owner id and locations
-        result = seed_event(locations, event_owner)
-    except Exception as e:
-        raise e
+        if locations is not []:
+            # Finally seed event with event_owner id and locations
+            result = seed_event(locations, event_owner)
 
 
 def seed_locations():
