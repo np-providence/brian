@@ -100,10 +100,10 @@ def event_get_all():
 
 @app.route("/api/location/all", methods=['GET'])
 def location_get_all():
-    locations = get_all_event()
+    locations = get_all_location()
     location_schema = LocationSchema()
-    if events is not None:
-        result = [event_schema.dump(location) for location in locations]
+    if locations is not None:
+        result = [location_schema.dump(location) for location in locations]
         return jsonify(result), 200
     return 'location not found', 400
 
