@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from loguru import logger
 from marshmallow_sqlalchemy import ModelSchema
 from PIL import Image
 import numpy as np
@@ -13,7 +14,6 @@ from common.common import db, gen_hash
 
 session = db.session
 
-# TODO: This file will not compile, need to rewrite
 class Feature(db.Model):
     __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
@@ -59,3 +59,12 @@ def get_features():
         logger.error(e)
         raise
 
+def get_all_features(userid):
+    logger.info("Attempting to get list of features")
+    try:
+        results = session.query(Feature).filter_by(
+            user_id=userid).all()
+        print(results)
+        return results
+    except Exception as e:
+        print(e)

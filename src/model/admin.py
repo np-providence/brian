@@ -2,38 +2,44 @@ from marshmallow_sqlalchemy import ModelSchema
 import bcrypt
 from loguru import logger
 
-from .user import User 
+from .user import User
 from common.common import gen_hash, db
 
 session = db.session
+
 
 class Admin(User):
     __tablename__ = 'admin'
     id = db.Column(db.BIGINT(), db.ForeignKey('user.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity':'admin',
+        'polymorphic_identity': 'admin',
     }
+
 
 class AdminSchema(ModelSchema):
     class Meta:
         model = Admin
 
-def add_admin(data): 
-    new_admin = Admin(id=gen_hash(),
-                    name=data['name'],
-                    email=data['email'],
-                    role='admin',
-                    passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
-                                           bcrypt.gensalt()).decode('utf-8'))
+
+def add_admin(data):
+    didSucceed = None
+    hash_id = gen_hash()    
+    new_admin = Admin(id=hash_id,
+                      name=data['name'],
+                      email=data['email'],
+                      role='admin',
+                      passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
+                                             bcrypt.gensalt()).decode('utf-8'))
     session.add(new_admin)
-    try: 
+    try:
         session.commit()
         logger.info('Admin user successfully added')
+        didSucceed = hash_id
     except Exception as e:
         logger.error(e)
         session.rollback()
         raise
     finally:
         session.close()
-        return True 
+        return didSucceed

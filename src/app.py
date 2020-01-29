@@ -14,14 +14,14 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
-from model.feature import add_feature
 from model.student import add_student
+from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
 from model.location import LocationSchema
 from common.common import gen_hash, db
-from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years
 from common.image import decode_image
+from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -38,25 +38,25 @@ def seed():
     print('SEED: Seeding DB...')
     seed_years()
     seed_courses()
-    seed_locations()
-
     seed_users()
-    seed_event()
+    seed_eventowner_with_events()
 
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
     return jsonify(faces=identify_faces(data['faces'])), 200
 
-@app.route("/api/features", methods=['POST'])
-def features_post():
-    try:
-        data = request.get_json()
-        face_encodings, number_of_faces = find_faces(data['image'])
-        return jsonify(numberOfFaces=number_of_faces)
-    except Exception as e:
-        logger.error(e)
-        return 500, 'an error has occured'
+@app.route("/api/features", methods=['GET'])
+def features_get():
+    data = request.get_json()
+    userid = request.args.get('userid')
+    result = get_all_features(userid)
+
+    if result is not None:
+        feature_schemas = FeatureSchema(many=True)
+        return jsonify(feature_schemas.dump(result)), 200
+    return 'Features not found', 400
+
 
 # Enrols a new student user
 @app.route("/api/enrol", methods=['POST'])
@@ -107,11 +107,6 @@ def event_get():
     result = get_event(name)
 
     if result is not None:
-        for event in result:
-            for location in event.locations:
-                print('{} {}'.format(location_schema.dump(location),
-                                     event_schema.dump(event)))
-
         return jsonify(event_schemas.dump(result)), 200
 
     return 'Event not found', 400
@@ -129,11 +124,11 @@ def event_get_all():
 
 #  @app.route("/user/signup", methods=['POST'])
 #  def signup():
-    #  data = request.get_json()
-    #  result = add_user(data)
-    #  if result:
-        #  return 'User Sucessfully added', 200
-    #  return 'Failed to add user', 400
+#  data = request.get_json()
+#  result = add_user(data)
+#  if result:
+#  return 'User Sucessfully added', 200
+#  return 'Failed to add user', 400
 
 
 @app.route("/user/login", methods=['GET'])

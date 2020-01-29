@@ -9,81 +9,45 @@ tags:
   description: "Everything about enrollment"
 - name: "Identify"
   description: "Everything about identifying ppl"
+- name: "Event"
+  description: "Everything about events"
 schemes:
 - "https"
 paths:
-  /attendee:
+  /event:
     get:
       tags:
-      - "enrollment"
-      summary: "Retrieve a attendee"
+      - "Event"
+      summary: "Retrieve all events by name"
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: The name of the event
       responses:
         '200':
           description: 'OK'
-  /attendee/new:
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/Event"
+
+  /event/new:
     post:
       tags:
-      - "enrollment"
-      summary: "Add a new attendee"
+      - "Event"
+      summary: "Add a new event"
       responses:
         '200':
           description: 'OK'
       parameters:
       - in: "body"
         name: "body"
-        description: "Attendee object that needs to be added"
+        description: "Event object that needs to be added"
         required: true
         schema:
-          $ref: "#/definitions/Attendee"
-  /identify:
-    post:
-      tags:
-      - "Identify"
-      summary: "To identify a student or a eventowner"
-      responses:
-        '200':
-          description: 'OK'
-      parameters:
-      - in: "body"
-        name: "body"
-        schema:
-          $ref: "#/definitions/Identify"
-  /camera:
-    get:
-      tags:
-      - "camera"
-      summary: "Retrieve a camera"
-      responses:
-        '200':
-          description: 'OK'
-
-  /camera/post:
-    post:
-      tags:
-      - "camera"
-      summary: "Register a camera"
-      responses:
-        '200':
-          description: 'OK'
-      parameters:
-      - in: "body"
-        name: "body"
-        schema:
-          $ref: "#/definitions/Camera"
-
-  /user/signup:
-    post:
-      tags:
-      - "user"
-      summary: "Register a user"
-      responses:
-        '200':
-          description: 'OK'
-      parameters:
-      - in: "body"
-        name: "body"
-        schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/Event"
 
   /user/login:
     get:
@@ -93,52 +57,24 @@ paths:
       responses:
         '200':
           description: 'OK'
+
 definitions:
-  Attendee:
+  Event:
     type: "object"
     properties:
       name:
         type: string
-      year:
-        type: integer
-      gender:
+      createdBy:
         type: string
-      isEnrolled:
-        type: boolean
-      email:
+      dateTimeStart:
         type: string
-      course:
+        format: date-time
+      dateTimeEnd:
         type: string
-      features:
+        format: date-time
+      locations:
         type: array
         items:
-          type: string
-  User:
-    type: "object"
-    properties:
-      name:
-        type: string
-      isAdmin:
-        type: boolean
-      password:
-        type: string
-      email:
-        type: string
-  Identify:
-    type: 'object'
-    properties:
-      features:
-        type: array
-        items:
-          type: array
-          items: 
-            type: integer
-  Camera:
-    type: 'object'
-    properties:
-      macAddress:
-        type: string
-      location:
-        type: string
+          type: integer
 
 

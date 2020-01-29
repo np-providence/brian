@@ -8,9 +8,10 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import (create_access_token)
 from flask_sqlalchemy import SQLAlchemy
 
-from common.common import gen_hash, db
+from common.common import db
 
 session = db.session
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -19,10 +20,7 @@ class User(db.Model):
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
     role = db.Column(db.String())
-    __mapper_args__ = {
-        'polymorphic_identity':'user',
-        'polymorphic_on': role
-    }
+    __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': role}
 
 
 class UserSchema(ModelSchema):
@@ -64,7 +62,8 @@ def authenticate_user(email, password):
     is_password_correct = comparePassword(password, user['passHash'])
     if is_password_correct:
         logger.info('password_correct')
-        token = create_access_token(identity=user['id'])
+        expires = timedelta(days=1)
+        token = create_access_token(identity=user['id'], expires_delta=expires)
         return jsonify(token=token)
     else:
         logger.error('password wrong')
