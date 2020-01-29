@@ -16,7 +16,7 @@ from config import ConfigClass
 from model.feature import add_features, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
-from model.location import LocationSchema
+from model.location import LocationSchema, get_all_location
 from common.common import gen_hash, db
 from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
 
@@ -103,6 +103,14 @@ def event_get_all():
         return jsonify(result), 200
     return 'Event not found', 400
 
+@app.route("/api/location/all", methods=['GET'])
+def location_get_all():
+    locations = get_all_event()
+    location_schema = LocationSchema()
+    if events is not None:
+        result = [event_schema.dump(location) for location in locations]
+        return jsonify(result), 200
+    return 'location not found', 400
 
 #  @app.route("/user/signup", methods=['POST'])
 #  def signup():
