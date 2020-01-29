@@ -63,6 +63,7 @@ def features_post():
     face_encodings, number_of_faces = find_faces(data['image'])	
     return jsonify(numberOfFaces=number_of_faces)	
 
+
 # Enrols a new student user
 @app.route("/api/enrol", methods=['POST'])
 def enrol_post():
@@ -89,7 +90,6 @@ def enrol_post():
             logger.error(e)
             return 'Failed to enrol', 500 
     return 'Enroled', 200 
-
 
 
 @app.route("/api/event/new", methods=['POST'])
@@ -135,14 +135,8 @@ def location_get_all():
         return jsonify(result), 200
     return 'location not found', 400
 
-#  @app.route("/user/signup", methods=['POST'])
-#  def signup():
-#  data = request.get_json()
-#  result = add_user(data)
-#  if result:
-#  return 'User Sucessfully added', 200
-#  return 'Failed to add user', 400
 
+# User
 
 @app.route("/user/login", methods=['GET'])
 def login():

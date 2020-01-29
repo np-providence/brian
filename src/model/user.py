@@ -64,7 +64,10 @@ def authenticate_user(email, password):
         logger.info('password_correct')
         expires = timedelta(days=1)
         token = create_access_token(identity=user['id'], expires_delta=expires)
-        return jsonify(token=token)
+        # Remove sensitive fields before response
+        del user['passHash']
+        del user['email']
+        return jsonify(token=token, user=user)
     else:
         logger.error('password wrong')
         return 'Email and password combination is incorrect', 401
