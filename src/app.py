@@ -15,7 +15,7 @@ from face import find_faces, identify_faces
 from config import ConfigClass
 from model.feature import add_features
 from model.user import get_user, UserSchema, authenticate_user, User
-from model.event import add_event, get_event, EventSchema
+from model.event import add_event, get_event, EventSchema, get_all_event
 from model.location import LocationSchema, get_all_location
 from common.common import gen_hash, db
 from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years

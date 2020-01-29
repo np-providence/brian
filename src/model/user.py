@@ -68,7 +68,7 @@ def authenticate_user(email, password):
     if is_password_correct:
         logger.info('password_correct')
         token = create_access_token(identity=user['id'])
-        return jsonify(token=token)
+        return jsonify(token=token, user=user)
     else:
         logger.error('password wrong')
         return 'Email and password combination is incorrect', 401
