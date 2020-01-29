@@ -5,10 +5,12 @@ from common.common import gen_hash, db
 
 session = db.session
 
+
 class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.BIGINT(), primary_key=True)
     name = db.Column(db.String(), unique=True)
+
 
 class LocationSchema(ModelSchema):
     class Meta:
@@ -21,8 +23,7 @@ def add_location(data):
     session.add(location)
     try:
         session.commit()
-        logger.debug("Location successfully added")
-        didSucceed = True
+        didSucceed = location.id
     except Exception as e:
         print("Error ==> ", e)
         session.rollback()
