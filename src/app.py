@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity)
 from flask_sqlalchemy import SQLAlchemy
@@ -13,12 +14,14 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
-from model.feature import add_features
+from model.student import add_student
+from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema, get_all_event
 from model.location import LocationSchema, get_all_location
 from common.common import gen_hash, db
-from common.seed import seed_users, seed_event, seed_locations, seed_courses, seed_years
+from common.image import decode_image
+from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -30,33 +33,63 @@ CORS(app)
 
 db.create_all(app=app)
 
-
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
     seed_years()
     seed_courses()
-    seed_locations()
-
     seed_users()
-    seed_event()
-
+    seed_eventowner_with_events()
 
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
-    return identify_faces(data['faces'])
+    return jsonify(faces=identify_faces(data['faces'])), 200
 
+@app.route("/api/features", methods=['GET'])
+def features_get():
+    data = request.get_json()
+    userid = request.args.get('userid')
+    result = get_all_features(userid)
 
-@app.route("/api/features", methods=['POST'])
-def features_post():
-    try:
-        data = request.get_json()
-        face_encodings, number_of_faces = find_faces(data['image'])
-        return jsonify(numberOfFaces=number_of_faces)
-    except Exception as e:
-        logger.error(e)
-        return 500, 'an error has occured'
+    if result is not None:
+        feature_schemas = FeatureSchema(many=True)
+        return jsonify(feature_schemas.dump(result)), 200
+    return 'Features not found', 400
+
+@app.route("/api/features", methods=['POST'])	
+def features_post():	
+    data = request.get_json()	
+    face_encodings, number_of_faces = find_faces(data['image'])	
+    return jsonify(numberOfFaces=number_of_faces)	
+
+# Enrols a new student user
+@app.route("/api/enrol", methods=['POST'])
+def enrol_post():
+    data = request.get_json()
+    # TODO: Check if student exists (via email)
+    # Add student
+    student_data = {
+            'role': 'student',
+            'name': data['name'],
+            'email': data['email'],
+            'password': 'password',
+            }
+    student_id = add_student(student_data)
+    for image in data['images']:
+        face_encodings, num_of_faces = find_faces(image)
+        feature_data = {
+                'user_id': student_id,
+                'face_encoding': ','.join(map(str, face_encodings[0])),
+                'date_time_recorded': datetime.utcnow(),
+                }
+        try:
+            add_feature(feature_data)
+        except Exception as e:
+            logger.error(e)
+            return 'Failed to enrol', 500 
+    return 'Enroled', 200 
+
 
 
 @app.route("/api/event/new", methods=['POST'])
@@ -79,11 +112,6 @@ def event_get():
     result = get_event(name)
 
     if result is not None:
-        for event in result:
-            for location in event.locations:
-                print('{} {}'.format(location_schema.dump(location),
-                                     event_schema.dump(event)))
-
         return jsonify(event_schemas.dump(result)), 200
 
     return 'Event not found', 400
@@ -109,11 +137,11 @@ def location_get_all():
 
 #  @app.route("/user/signup", methods=['POST'])
 #  def signup():
-    #  data = request.get_json()
-    #  result = add_user(data)
-    #  if result:
-        #  return 'User Sucessfully added', 200
-    #  return 'Failed to add user', 400
+#  data = request.get_json()
+#  result = add_user(data)
+#  if result:
+#  return 'User Sucessfully added', 200
+#  return 'Failed to add user', 400
 
 
 @app.route("/user/login", methods=['GET'])

@@ -2,7 +2,8 @@ import face_recognition
 from loguru import logger
 import numpy as np
 
-from model.feature import get_all_features
+from model.feature import get_features 
+from model.user import get_user_by_id
 from common.image import decode_image
 
 
@@ -15,24 +16,25 @@ def find_faces(data):
 
 
 def identify_faces(face_encodings):
-    return [compare_features(feature) for feature in face_encodings]
+    return [compare_face(face) for face in face_encodings]
 
 
-def compare_features(features):
-    query_feature = np.asarray(features)
-    user_features = get_all_features()
+def compare_face(face):
+    query_feature = np.asarray(face)
+    user_features = get_features() 
 
     # Match and sort
-    feature_dataset = list(map(lambda x: x['feat'], user_features))
+    feature_dataset = np.array(list(map(lambda f: np.array(f.face_encoding.split(',')).astype(np.float), user_features)))
     match_scores = face_recognition.face_distance(feature_dataset,
                                                   query_feature)
-    matches_sorted = list(zip(match_scores,
-                              user_features)).sort(key=lambda x: x[0],
-                                                   reverse=True)
+    matches_sorted = sorted(list(zip(match_scores,
+                              user_features)),key=(lambda x: x[0]))
 
-    logger.info(matches_sorted)
+    matches_sorted = list(filter(lambda x: x[0] < 0.3, matches_sorted))
 
-    # TODO: Set accuracy threshold and filter
+    if len(matches_sorted) > 0:
+        matched_user = get_user_by_id(matches_sorted[0][1].user_id)
+        return matched_user.name
+    else:
+        return 'Unidentified'
 
-    # TODO: Return user
-    #return get_attendee_by_id(matches_sorted[0][1]['attendee_id'])
