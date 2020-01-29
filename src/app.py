@@ -57,6 +57,11 @@ def features_get():
         return jsonify(feature_schemas.dump(result)), 200
     return 'Features not found', 400
 
+@app.route("/api/features", methods=['POST'])	
+def features_post():	
+    data = request.get_json()	
+    face_encodings, number_of_faces = find_faces(data['image'])	
+    return jsonify(numberOfFaces=number_of_faces)	
 
 # Enrols a new student user
 @app.route("/api/enrol", methods=['POST'])
