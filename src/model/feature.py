@@ -8,51 +8,56 @@ import io
 import face_recognition
 import re
 from base64 import b64decode
+from loguru import logger
 
-from common.common import db
+from common.common import db, gen_hash
 
 session = db.session
-
 
 class Feature(db.Model):
     __tablename__ = 'feature'
     id = db.Column(db.BIGINT(), primary_key=True)
     user_id = db.Column(db.BIGINT(), db.ForeignKey('user.id'))
-    face_encoding = db.Column(db.ARRAY(db.Numeric()))
+    face_encoding = db.Column(db.String())
     date_time_recorded = db.Column(db.DateTime())
 
 
 class FeatureSchema(ModelSchema):
     class Meta:
+        foreignKey = True
         model = Feature
 
 
 feature_schemas = FeatureSchema(many=True)
 
+#  def hash_feature(feature):
+    #  a = tuple(tuple(p) for p in feature)
+    #  return abs(hash(a))
 
-def genhash(features):
-    a = tuple(tuple(p) for p in features)
-    return abs(hash(a))
-
-
-def add_features(data, face_encoding):
-    didSucceed = False
-    hash_id = genhash(face_encoding)
-    new_features = Feature(id=hash_id,
-                           user_id=data['userid'],
-                           face_encoding=face_encoding[0])
-    session.add(new_features)
+def add_feature(data):
+    feature = Feature(id= gen_hash(), 
+            user_id=data['user_id'],
+            face_encoding= data['face_encoding'],
+            date_time_recorded= data['date_time_recorded'],
+            ) 
+    session.add(feature)
     try:
         session.commit()
-        didSucceed = True
+        logger.info('Added feature')
     except Exception as e:
-        print(e)
+        logger.error(e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return True
 
+def get_features():
+    try:
+        return Feature.query.all()
+    except Exception as e:
+        logger.error(e)
+        raise
 
 def get_all_features(userid):
     logger.info("Attempting to get list of features")
