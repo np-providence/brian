@@ -30,3 +30,11 @@ def add_location(data):
     finally:
         session.close()
         return didSucceed
+
+def get_all_location():
+    logger.info("Attempting to get all location")
+    try:
+        location = session.query(Location).all()
+        return location
+    except Exception as e:
+        print(e)
