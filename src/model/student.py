@@ -23,17 +23,14 @@ class StudentSchema(ModelSchema):
     class Meta:
         model = Student
 
-
-def add_student(data):
-    didSucceed = None
-    hash_id = gen_hash()
-    new_student = Student(id=hash_id,
-                          name=data['name'],
-                          email=data['email'],
-                          role='student',
-                          passHash=bcrypt.hashpw(
-                              data['password'].encode('utf-8'),
-                              bcrypt.gensalt()).decode('utf-8'))
+def add_student(data): 
+    id = gen_hash()
+    new_student = Student(id=id,
+                    name=data['name'],
+                    email=data['email'],
+                    role='student',
+                    passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
+                                           bcrypt.gensalt()).decode('utf-8'))
     session.add(new_student)
     try:
         session.commit()
@@ -45,8 +42,7 @@ def add_student(data):
         raise
     finally:
         session.close()
-        return didSucceed
-
+        return id 
 
 class Course(db.Model):
     __tablename__ = 'course'
