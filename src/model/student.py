@@ -22,12 +22,16 @@ class Student(User):
 class StudentSchema(ModelSchema):
     class Meta:
         model = Student
+        include_fk = True
 
-def add_student(data): 
+
+def add_student(data):
     id = gen_hash()
     new_student = Student(id=id,
                     name=data['name'],
                     email=data['email'],
+                    course_id= data['course_id'],
+                    year_id= data['year_id'],
                     role='student',
                     passHash=bcrypt.hashpw(data['password'].encode('utf-8'),
                                            bcrypt.gensalt()).decode('utf-8'))
@@ -42,7 +46,19 @@ def add_student(data):
         raise
     finally:
         session.close()
-        return id 
+        return id
+
+def get_students():
+    try:
+        results = Student.query.all()
+        results = list(map(lambda x: StudentSchema().dump(x), results))
+        for student in results:
+            del student['passHash']
+            del student['role']
+        return results
+    except Exception as e:
+        logger.error(e)
+        raise
 
 class Course(db.Model):
     __tablename__ = 'course'
@@ -69,6 +85,15 @@ def add_course(course_name):
         session.close()
         return True
 
+def get_courses():
+    try:
+        results = Course.query.all()
+        results = list(map(lambda x: CourseSchema().dump(x), results))
+        logger.info(results)
+        return results
+    except Exception as e:
+        logger.error(e)
+        raise
 
 class Year(db.Model):
     __tablename__ = 'year'
@@ -94,3 +119,12 @@ def add_year(year_name):
     finally:
         session.close()
         return True
+
+def get_years():
+    try:
+        results = Year.query.all()
+        results = list(map(lambda x: YearSchema().dump(x), results))
+        return results
+    except Exception as e:
+        logger.error(e)
+        raise

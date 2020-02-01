@@ -14,7 +14,7 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
-from model.student import add_student
+from model.student import add_student, get_students, get_years, get_courses
 from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, EventSchema
@@ -58,14 +58,15 @@ def features_get():
     return 'Features not found', 400
 
 @app.route("/api/features", methods=['POST'])	
+@admin_required
 def features_post():	
     data = request.get_json()	
     face_encodings, number_of_faces = find_faces(data['image'])	
     return jsonify(numberOfFaces=number_of_faces)	
 
-
 # Enrols a new student user
 @app.route("/api/enrol", methods=['POST'])
+@admin_required
 def enrol_post():
     data = request.get_json()
     # TODO: Check if student exists (via email)
@@ -75,6 +76,8 @@ def enrol_post():
             'name': data['name'],
             'email': data['email'],
             'password': 'password',
+            'year_id': data['yearID'],
+            'course_id': data['courseID'],
             }
     student_id = add_student(student_data)
     for image in data['images']:
@@ -90,6 +93,24 @@ def enrol_post():
             logger.error(e)
             return 'Failed to enrol', 500 
     return 'Enroled', 200 
+
+@app.route('/api/year', methods=['GET'])
+@admin_required
+def get_year():
+    years = get_years()
+    return jsonify(years=years)
+
+@app.route('/api/course', methods=['GET'])
+@admin_required
+def get_course():
+    courses = get_courses()
+    return jsonify(courses=courses)
+
+@app.route('/api/student', methods=['GET'])
+@admin_required
+def get_student():
+    students = get_students()
+    return jsonify(students=students) 
 
 
 @app.route("/api/event/new", methods=['POST'])
@@ -137,7 +158,6 @@ def location_get_all():
 
 
 # User
-
 @app.route("/user/login", methods=['GET'])
 def login():
     email = request.args.get('email')
