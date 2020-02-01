@@ -17,11 +17,11 @@ from config import ConfigClass
 from model.student import add_student, get_students, get_years, get_courses
 from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
-from model.event import add_event, get_event, EventSchema
+from model.event import add_event, get_event, get_all_event, EventSchema
 from model.location import LocationSchema, get_all_location
 from common.common import gen_hash, db
 from common.image import decode_image
-from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
+from common.seed import seed_all
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -36,10 +36,7 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
-    seed_years()
-    seed_courses()
-    seed_users()
-    seed_eventowner_with_events()
+    seed_all()
 
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
@@ -98,19 +95,19 @@ def enrol_post():
 @admin_required
 def get_year():
     years = get_years()
-    return jsonify(years=years)
+    return jsonify(data=years)
 
 @app.route('/api/course', methods=['GET'])
 @admin_required
 def get_course():
     courses = get_courses()
-    return jsonify(courses=courses)
+    return jsonify(data=courses)
 
 @app.route('/api/student', methods=['GET'])
 @admin_required
 def get_student():
     students = get_students()
-    return jsonify(students=students) 
+    return jsonify(data=students) 
 
 
 @app.route("/api/event/new", methods=['POST'])

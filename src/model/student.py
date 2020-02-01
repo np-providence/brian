@@ -12,7 +12,7 @@ class Student(User):
     __tablename__ = 'student'
     id = db.Column(db.BIGINT(), db.ForeignKey('user.id'), primary_key=True)
     course_id = db.Column(db.BIGINT(), db.ForeignKey('course.id'))
-    year_id = db.Column(db.BIGINT(), db.ForeignKey('course.id'))
+    year_id = db.Column(db.BIGINT(), db.ForeignKey('year.id'))
 
     __mapper_args__ = {
         'polymorphic_identity': 'student',
@@ -39,7 +39,6 @@ def add_student(data):
     try:
         session.commit()
         logger.info('Student user successfully added')
-        didSucceed = hash_id
     except Exception as e:
         logger.error(e)
         session.rollback()
@@ -72,7 +71,8 @@ class CourseSchema(ModelSchema):
 
 
 def add_course(course_name):
-    new_course = Course(id=gen_hash(), name=course_name)
+    id = gen_hash()
+    new_course = Course(id=id, name=course_name)
     session.add(new_course)
     try:
         session.commit()
@@ -83,7 +83,7 @@ def add_course(course_name):
         raise
     finally:
         session.close()
-        return True
+        return id 
 
 def get_courses():
     try:
@@ -107,7 +107,8 @@ class YearSchema(ModelSchema):
 
 
 def add_year(year_name):
-    new_year = Year(id=gen_hash(), name=year_name)
+    id = gen_hash()
+    new_year = Year(id=id, name=year_name)
     session.add(new_year)
     try:
         session.commit()
@@ -118,7 +119,7 @@ def add_year(year_name):
         raise
     finally:
         session.close()
-        return True
+        return id 
 
 def get_years():
     try:

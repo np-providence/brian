@@ -32,7 +32,7 @@ class EventLocation(db.Model):
     event_id = db.Column(db.BIGINT(),
                          db.ForeignKey('event.id', ondelete='CASCADE'),
                          primary_key=True)
-    location_id = db.Column(db.Integer(),
+    location_id = db.Column(db.BIGINT(),
                             db.ForeignKey('location.id', ondelete='CASCADE'),
                             primary_key=True)
 

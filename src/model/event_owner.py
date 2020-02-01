@@ -22,9 +22,8 @@ class EventOwnerSchema(ModelSchema):
 
 
 def add_event_owner(data):
-    didSucceed = None
-    hash_id = gen_hash()
-    new_event_owner = EventOwner(id=hash_id,
+    id = gen_hash()
+    new_event_owner = EventOwner(id=id,
                                  name=data['name'],
                                  email=data['email'],
                                  role='event_owner',
@@ -35,11 +34,10 @@ def add_event_owner(data):
     try:
         session.commit()
         logger.info('Event owner user successfully added')
-        didSucceed = hash_id
     except Exception as e:
         logger.error(e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return id 
