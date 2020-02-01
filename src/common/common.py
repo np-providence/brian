@@ -5,5 +5,5 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 def gen_hash():
     today = datetime.now()
-    return abs(hash(today))
+    return str(abs(hash(today)))
 

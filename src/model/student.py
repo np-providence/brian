@@ -10,9 +10,9 @@ session = db.session
 
 class Student(User):
     __tablename__ = 'student'
-    id = db.Column(db.BIGINT(), db.ForeignKey('user.id'), primary_key=True)
-    course_id = db.Column(db.BIGINT(), db.ForeignKey('course.id'))
-    year_id = db.Column(db.BIGINT(), db.ForeignKey('year.id'))
+    id = db.Column(db.String(), db.ForeignKey('user.id'), primary_key=True)
+    course_id = db.Column(db.String(), db.ForeignKey('course.id'))
+    year_id = db.Column(db.String(), db.ForeignKey('year.id'))
 
     __mapper_args__ = {
         'polymorphic_identity': 'student',
@@ -61,7 +61,7 @@ def get_students():
 
 class Course(db.Model):
     __tablename__ = 'course'
-    id = db.Column(db.BIGINT(), primary_key=True)
+    id = db.Column(db.String(), primary_key=True)
     name = db.Column(db.String(), unique=True)
 
 
@@ -97,7 +97,7 @@ def get_courses():
 
 class Year(db.Model):
     __tablename__ = 'year'
-    id = db.Column(db.BIGINT(), primary_key=True)
+    id = db.Column(db.String(), primary_key=True)
     name = db.Column(db.String(), unique=True)
 
 

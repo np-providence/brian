@@ -15,8 +15,8 @@ session = db.session
 
 class Event(db.Model):
     __tablename__ = 'event'
-    id = db.Column(db.BIGINT(), primary_key=True)
-    created_by = db.Column(db.BIGINT(),
+    id = db.Column(db.String(), primary_key=True)
+    created_by = db.Column(db.String(),
                            db.ForeignKey('user.id', ondelete='CASCADE'))
     name = db.Column(db.String())
     date_time_start = db.Column(db.DateTime())
@@ -29,10 +29,10 @@ class Event(db.Model):
 
 class EventLocation(db.Model):
     __tablename__ = 'event_location'
-    event_id = db.Column(db.BIGINT(),
+    event_id = db.Column(db.String(),
                          db.ForeignKey('event.id', ondelete='CASCADE'),
                          primary_key=True)
-    location_id = db.Column(db.BIGINT(),
+    location_id = db.Column(db.String(),
                             db.ForeignKey('location.id', ondelete='CASCADE'),
                             primary_key=True)
 
