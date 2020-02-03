@@ -5,6 +5,7 @@ from model.student import add_student, add_course, add_year
 from model.event_owner import add_event_owner
 from model.event import add_event
 from model.location import add_location
+from model.attendance import add_attendance
 from loguru import logger
 import base64
 
@@ -16,8 +17,25 @@ def seed_all():
     if len(courses) > 0 and len(years) > 0:
         users = seed_users(courses, years)
         if len(users) > 0  and len(locations) > 0: 
-            events = seed_events(users[2], locations)
+            event_id = seed_events(users[2], locations)
+            if event_id is not None:
+                attendance_records = seed_attendance(users, event_id)
+                
     
+
+def seed_attendance(users, event_id):
+    attendance_data = {
+            'user_id': users[0],
+            'event_id': event_id,
+            'camera_mac_address': '30-65-EC-6F-C4-58',
+            'date_time': '2020-01-20 12:18:23 UTC',
+            }
+    attendance_records = add_attendance(attendance_data)
+    if attendance_records is None:
+        logger.error('Failed to seed attendance data')
+    else:
+        logger.success('Seeded attendance data')
+    return attendance_records
 
 def seed_users(courses, years):
     logger.debug('Seeding Users...')
@@ -47,6 +65,8 @@ def seed_users(courses, years):
     event_owner_id = add_event_owner(event_owner)
     if event_owner_id is None:
         logger.error('Could not seed event owner user')
+    else: 
+        logger.success('Seeded users')
     return [student_id, admin_id, event_owner_id]
 
 
@@ -109,5 +129,6 @@ def seed_events(event_owner_id, locations):
     result = add_event(data)
     if result:
         logger.success('{} successfully added', data['name'])
+        return result
     else:
         logger.error('Failed to add event')

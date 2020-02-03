@@ -55,9 +55,8 @@ event_location_schema = EventLocationSchema(many=True)
 
 
 def add_event(data):
-    didSucceed = False
-    hash_id = gen_hash()
-    new_event = Event(id=hash_id,
+    id = gen_hash()
+    new_event = Event(id=id,
                       name=data['name'],
                       created_by=data['createdBy'],
                       date_time_start=data['dateTimeStart'],
@@ -72,14 +71,13 @@ def add_event(data):
     logger.info('Attempting to add event')
     try:
         session.commit()
-        didSucceed = True
     except Exception as e:
         print("Error ==> ", e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return id 
 
 
 def get_event(name):
