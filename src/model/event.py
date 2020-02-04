@@ -49,7 +49,6 @@ class EventLocationSchema(ModelSchema):
     class Meta:
         model = EventLocation
 
-
 event_schema = EventSchema()
 event_location_schema = EventLocationSchema(many=True)
 

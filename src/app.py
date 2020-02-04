@@ -19,6 +19,7 @@ from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, get_all_event, EventSchema
 from model.location import LocationSchema, get_all_location
+from model.attendance import get_all_attendance 
 from common.common import gen_hash, db
 from common.image import decode_image
 from common.seed import seed_all
@@ -134,6 +135,11 @@ def event_get():
 
     return 'Event not found', 400
 
+@app.route("/api/attendance", methods=['GET'])
+def attendance_get():
+    attedance_records = get_all_attendance()
+    return jsonify(data=attedance_records)
+
 
 @app.route("/api/event/all", methods=['GET'])
 def event_get_all():
@@ -153,11 +159,9 @@ def location_get_all():
         return jsonify(result), 200
     return 'location not found', 400
 
-
 # User
 @app.route("/user/login", methods=['GET'])
 def login():
     email = request.args.get('email')
     password = request.args.get('password')
-    logger.info(email)
     return authenticate_user(email, password)

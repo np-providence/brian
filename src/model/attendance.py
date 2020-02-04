@@ -19,7 +19,7 @@ class AttendanceSchema(ModelSchema):
 
 def get_all_attendance():
     try:
-        attendance = session.query(Attendance).all()
+        attendance = list(map(AttendanceSchema().dump, session.query(Attendance).all()))
         return attendance
     except Exception as e:
         logger.error(e)

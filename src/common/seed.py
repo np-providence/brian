@@ -20,8 +20,7 @@ def seed_all():
             event_id = seed_events(users[2], locations)
             if event_id is not None:
                 attendance_records = seed_attendance(users, event_id)
-                
-    
+                 
 
 def seed_attendance(users, event_id):
     attendance_data = {
