@@ -19,7 +19,7 @@ from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
 from model.event import add_event, get_event, get_all_event, EventSchema
 from model.location import LocationSchema, get_all_location
-from model.attendance import get_all_attendance 
+from model.attendance import get_attendance_for_event, add_attendance
 from common.common import gen_hash, db
 from common.image import decode_image
 from common.seed import seed_all
@@ -105,7 +105,6 @@ def get_course():
     return jsonify(data=courses)
 
 @app.route('/api/student', methods=['GET'])
-@admin_required
 def get_student():
     students = get_students()
     return jsonify(data=students) 
@@ -137,9 +136,9 @@ def event_get():
 
 @app.route("/api/attendance", methods=['GET'])
 def attendance_get():
-    attedance_records = get_all_attendance()
-    return jsonify(data=attedance_records)
-
+    event_id = request.args.get('event')
+    attendance_records = get_attendance_for_event(event_id)
+    return jsonify(data=attendance_records)
 
 @app.route("/api/event/all", methods=['GET'])
 def event_get_all():

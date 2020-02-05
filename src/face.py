@@ -4,6 +4,7 @@ import numpy as np
 
 from model.feature import get_features 
 from model.user import get_user_by_id
+from model.attendance import add_attendance
 from common.image import decode_image
 
 
@@ -34,7 +35,11 @@ def compare_face(face):
 
     if len(matches_sorted) > 0:
         matched_user = get_user_by_id(matches_sorted[0][1].user_id)
+        # TODO: Add to attendance table
         return matched_user.name
     else:
         return 'Unidentified'
 
+def add_attendance():
+    # TODO: Add to attendance table
+    pass

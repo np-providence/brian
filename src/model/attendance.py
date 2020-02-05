@@ -16,10 +16,11 @@ class Attendance(db.Model):
 class AttendanceSchema(ModelSchema):
     class Meta:
         model = Attendance
+        include_fk = True
 
-def get_all_attendance():
+def get_attendance_for_event(event_id):
     try:
-        attendance = list(map(AttendanceSchema().dump, session.query(Attendance).all()))
+        attendance = list(map(AttendanceSchema().dump, session.query(Attendance).filter_by(event_id=event_id).all()))
         return attendance
     except Exception as e:
         logger.error(e)
