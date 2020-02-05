@@ -20,8 +20,21 @@ class AttendanceSchema(ModelSchema):
 
 def get_attendance_for_event(event_id):
     try:
+        result = []
+        attendees = set()
         attendance = list(map(AttendanceSchema().dump, session.query(Attendance).filter_by(event_id=event_id).all()))
-        return attendance
+
+        # Build a collection of unique users
+        for a in attendance:
+            attendees.add(a['user_id'])
+
+        # Get earliest seen time for each attendee
+        for attendee in attendees:
+            records = list(filter(lambda a: a['user_id'] == attendee, attendance))
+            # Sort by date and get earliest seen time
+            records = sorted(records, key=lambda x: x['date_time'])
+            result.append(records[0])
+        return result
     except Exception as e:
         logger.error(e)
         raise

@@ -27,7 +27,7 @@ def seed_attendance(users, event_id):
             'user_id': users[0],
             'event_id': event_id,
             'camera_mac_address': '30-65-EC-6F-C4-58',
-            'date_time': '2020-01-20 12:18:23 UTC',
+            'date_time': '2020-02-05T08:39:09.435852',
             }
     attendance_records = add_attendance(attendance_data)
     if attendance_records is None:

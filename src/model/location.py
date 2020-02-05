@@ -37,4 +37,4 @@ def get_all_location():
         location = session.query(Location).all()
         return location
     except Exception as e:
-        print(e)
+        logger.error(e)

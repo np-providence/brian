@@ -98,6 +98,13 @@ def get_events_by_user(user):
     except Exception as e:
         print(e)
 
+def get_events_for_location(location_id, time_val):
+    try:
+        events = session.query(Event).join(Event.locations).filter(Location.id == location_id).filter(Event.date_time_start < time_val).filter(Event.date_time_end > time_val)
+        return events
+    except Exception as e:
+        logger.error(e)
+        raise
 
 def get_all_event():
     logger.info("Attempting to get all event")
