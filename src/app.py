@@ -93,13 +93,11 @@ def enrol_post():
     return 'Enroled', 200 
 
 @app.route('/api/year', methods=['GET'])
-@admin_required
 def get_year():
     years = get_years()
     return jsonify(data=years)
 
 @app.route('/api/course', methods=['GET'])
-@admin_required
 def get_course():
     courses = get_courses()
     return jsonify(data=courses)
@@ -120,7 +118,6 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-#@admin_required
 def event_get():
     event_schemas = EventSchema(many=True)
     event_schema = EventSchema()
