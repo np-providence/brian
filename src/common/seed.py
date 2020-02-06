@@ -39,8 +39,8 @@ def seed_attendance(users, event_id):
 def seed_users(courses, years):
     logger.debug('Seeding Users...')
     student = {
-        'email': 'potatoman50@gmail.com',
-        'name': 'Shun Yuan',
+        'email': 'jeremy@gmail.com',
+        'name': 'Jeremy',
         'password': 'password',
         'course_id': courses[0],
         'year_id': years[0] 
@@ -73,7 +73,7 @@ def seed_courses():
     logger.debug('Seeding courses...')
     data = [
         'Information Technology',
-        'How I Met Your Mother',
+        'Multimedia Design',
         'Art and design',
     ]
     course_ids = []
@@ -104,7 +104,7 @@ def seed_years():
 
 def seed_locations():
     logger.debug('Seeding Locations...')
-    data = [{'name': 'hdmi'}, {'name': 'cable'}]
+    data = [{'name': '27-10-01'}, {'name': '31-06-07'}]
     location_ids = []
     for row in data:
         record = add_location(row)
