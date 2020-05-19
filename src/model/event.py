@@ -15,8 +15,8 @@ session = db.session
 
 class Event(db.Model):
     __tablename__ = 'event'
-    id = db.Column(db.BIGINT(), primary_key=True)
-    created_by = db.Column(db.BIGINT(),
+    id = db.Column(db.String(), primary_key=True)
+    created_by = db.Column(db.String(),
                            db.ForeignKey('user.id', ondelete='CASCADE'))
     name = db.Column(db.String())
     date_time_start = db.Column(db.DateTime())
@@ -29,10 +29,10 @@ class Event(db.Model):
 
 class EventLocation(db.Model):
     __tablename__ = 'event_location'
-    event_id = db.Column(db.BIGINT(),
+    event_id = db.Column(db.String(),
                          db.ForeignKey('event.id', ondelete='CASCADE'),
                          primary_key=True)
-    location_id = db.Column(db.Integer(),
+    location_id = db.Column(db.String(),
                             db.ForeignKey('location.id', ondelete='CASCADE'),
                             primary_key=True)
 
@@ -49,15 +49,13 @@ class EventLocationSchema(ModelSchema):
     class Meta:
         model = EventLocation
 
-
 event_schema = EventSchema()
 event_location_schema = EventLocationSchema(many=True)
 
 
 def add_event(data):
-    didSucceed = False
-    hash_id = gen_hash()
-    new_event = Event(id=hash_id,
+    id = gen_hash()
+    new_event = Event(id=id,
                       name=data['name'],
                       created_by=data['createdBy'],
                       date_time_start=data['dateTimeStart'],
@@ -72,14 +70,13 @@ def add_event(data):
     logger.info('Attempting to add event')
     try:
         session.commit()
-        didSucceed = True
     except Exception as e:
         print("Error ==> ", e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return id 
 
 
 def get_event(name):
@@ -101,6 +98,13 @@ def get_events_by_user(user):
     except Exception as e:
         print(e)
 
+def get_events_for_location(location_id, time_val):
+    try:
+        events = session.query(Event).join(Event.locations).filter(Location.id == location_id).filter(Event.date_time_start < time_val).filter(Event.date_time_end > time_val)
+        return events
+    except Exception as e:
+        logger.error(e)
+        raise
 
 def get_all_event():
     logger.info("Attempting to get all event")

@@ -16,9 +16,9 @@ session = db.session
 
 class Feature(db.Model):
     __tablename__ = 'feature'
-    id = db.Column(db.BIGINT(), primary_key=True)
-    user_id = db.Column(db.BIGINT(), db.ForeignKey('user.id'))
-    face_encoding = db.Column(db.ARRAY(db.Numeric()))
+    id = db.Column(db.String(), primary_key=True)
+    user_id = db.Column(db.String(), db.ForeignKey('user.id'))
+    face_encoding = db.Column(db.String())
     date_time_recorded = db.Column(db.DateTime())
 
 

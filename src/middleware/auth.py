@@ -7,6 +7,7 @@ from flask_jwt_extended import (JWTManager, verify_jwt_in_request,
 
 from model.user import get_user_by_id 
 
+from loguru import logger
 
 def admin_required(fn):
     @wraps(fn)

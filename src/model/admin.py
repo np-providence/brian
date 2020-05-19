@@ -10,7 +10,7 @@ session = db.session
 
 class Admin(User):
     __tablename__ = 'admin'
-    id = db.Column(db.BIGINT(), db.ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.String(), db.ForeignKey('user.id'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'admin',
@@ -23,9 +23,8 @@ class AdminSchema(ModelSchema):
 
 
 def add_admin(data):
-    didSucceed = None
-    hash_id = gen_hash()    
-    new_admin = Admin(id=hash_id,
+    id = gen_hash()    
+    new_admin = Admin(id=id,
                       name=data['name'],
                       email=data['email'],
                       role='admin',
@@ -35,11 +34,10 @@ def add_admin(data):
     try:
         session.commit()
         logger.info('Admin user successfully added')
-        didSucceed = hash_id
     except Exception as e:
         logger.error(e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return id

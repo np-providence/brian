@@ -15,7 +15,7 @@ session = db.session
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.BIGINT(), primary_key=True)
+    id = db.Column(db.String(), primary_key=True)
     name = db.Column(db.String())
     email = db.Column(db.String(), unique=True)
     passHash = db.Column(db.String())
@@ -67,6 +67,8 @@ def authenticate_user(email, password):
         # Remove sensitive fields before response
         del user['passHash']
         del user['email']
+        # Convert id from int to string
+        user['id'] = str(user['id'])
         return jsonify(token=token, user=user)
     else:
         logger.error('password wrong')

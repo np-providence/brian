@@ -5,47 +5,85 @@ from model.student import add_student, add_course, add_year
 from model.event_owner import add_event_owner
 from model.event import add_event
 from model.location import add_location
+from model.attendance import add_attendance
 from loguru import logger
 import base64
 
+def seed_all():
+    courses = seed_courses()
+    years = seed_years()
+    locations = seed_locations()
 
-def seed_users():
+    if len(courses) > 0 and len(years) > 0:
+        users = seed_users(courses, years)
+        if len(users) > 0  and len(locations) > 0: 
+            event_id = seed_events(users[2], locations)
+            if event_id is not None:
+                attendance_records = seed_attendance(users, event_id)
+                 
+
+def seed_attendance(users, event_id):
+    attendance_data = {
+            'user_id': users[0],
+            'event_id': event_id,
+            'camera_mac_address': '30-65-EC-6F-C4-58',
+            'date_time': '2020-02-05T08:39:09.435852',
+            }
+    attendance_records = add_attendance(attendance_data)
+    if attendance_records is None:
+        logger.error('Failed to seed attendance data')
+    else:
+        logger.success('Seeded attendance data')
+    return attendance_records
+
+def seed_users(courses, years):
     logger.debug('Seeding Users...')
     student = {
-        'email': 'potatoman50@gmail.com',
-        'name': 'Shun Yuan',
+        'email': 'jeremy@gmail.com',
+        'name': 'Jeremy',
         'password': 'password',
+        'course_id': courses[0],
+        'year_id': years[0] 
     }
-    if add_student(student) is None:
+    student_id = add_student(student)
+    if student_id is None:
         logger.error('Could not seed student')
     admin = {
         'email': 'admin@gmail.com',
         'name': 'Admin',
         'password': 'password',
     }
-    if add_admin(admin) is None:
+    admin_id = add_admin(admin)
+    if admin_id is None:
         logger.error('Could not seed admin user')
     event_owner = {
         'email': 'event_owner@gmail.com',
         'name': 'Mr Toh',
         'password': 'password',
     }
-    if add_event_owner(event_owner) is None:
+    event_owner_id = add_event_owner(event_owner)
+    if event_owner_id is None:
         logger.error('Could not seed event owner user')
+    else: 
+        logger.success('Seeded users')
+    return [student_id, admin_id, event_owner_id]
 
 
 def seed_courses():
     logger.debug('Seeding courses...')
     data = [
         'Information Technology',
-        'How I Met Your Mother',
+        'Multimedia Design',
         'Art and design',
     ]
+    course_ids = []
     for row in data:
-        if add_course(row):
+        try:
+            course_ids.append(add_course(row))
             logger.success('{} successfully added', row)
-        else:
-            logger.error('Failed to add {}', row)
+        except Exception as e:
+            logger.error(e)
+    return course_ids
 
 
 def seed_years():
@@ -55,49 +93,34 @@ def seed_years():
         '2018',
         '2019',
     ]
+    year_ids = []
     for row in data:
-        if add_year(row):
+        try: 
+            year_ids.append(add_year(row))
             logger.success('{} successfully added', row)
-        else:
-            logger.error('Failed to add {}', row)
-
-
-def seed_eventowner_with_events():
-    logger.debug('Seeding event owner with events...')
-    event_owner = {
-        'email': 'saitama@gmail.com',
-        'name': 'saitama',
-        'password': 'password',
-    }
-    # Add event owner
-    event_owner = add_event_owner(event_owner)
-    if event_owner is not None:
-        # Get location id [1,2]
-        locations = seed_locations()
-        if locations is not []:
-            # Finally seed event with event_owner id and locations
-            result = seed_event(locations, event_owner)
-
+        except Exception as e:
+            logger.error(e)
+    return year_ids
 
 def seed_locations():
     logger.debug('Seeding Locations...')
-    data = [{'name': 'hdmi'}, {'name': 'cable'}]
-    result = []
+    data = [{'name': '27-10-01'}, {'name': '31-06-07'}]
+    location_ids = []
     for row in data:
         record = add_location(row)
         if record:
-            result.append(record)
+            location_ids.append(record)
             logger.success('{} successfully added', row['name'])
         else:
             logger.error('Failed to add {} ', row['name'])
-    return result
+    return location_ids 
 
 
-def seed_event(locations, user):
+def seed_events(event_owner_id, locations):
     logger.debug('Seeding events...')
     data = {
         "name": "Capstone",
-        "createdBy": user,
+        "createdBy": event_owner_id,
         "dateTimeStart": "2020-01-20 12:18:23 UTC",
         "dateTimeEnd": "2020-01-20 12:18:23 UTC",
         "locations": locations,
@@ -105,5 +128,6 @@ def seed_event(locations, user):
     result = add_event(data)
     if result:
         logger.success('{} successfully added', data['name'])
+        return result
     else:
         logger.error('Failed to add event')

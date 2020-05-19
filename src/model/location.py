@@ -8,7 +8,7 @@ session = db.session
 
 class Location(db.Model):
     __tablename__ = 'location'
-    id = db.Column(db.BIGINT(), primary_key=True)
+    id = db.Column(db.String(), primary_key=True)
     name = db.Column(db.String(), unique=True)
 
 
@@ -18,19 +18,18 @@ class LocationSchema(ModelSchema):
 
 
 def add_location(data):
-    didSucceed = False
-    location = Location(name=data['name'])
+    id = gen_hash()
+    location = Location(id=id, name=data['name'])
     session.add(location)
     try:
         session.commit()
-        didSucceed = location.id
     except Exception as e:
         print("Error ==> ", e)
         session.rollback()
         raise
     finally:
         session.close()
-        return didSucceed
+        return id
 
 def get_all_location():
     logger.info("Attempting to get all location")
@@ -38,4 +37,4 @@ def get_all_location():
         location = session.query(Location).all()
         return location
     except Exception as e:
-        print(e)
+        logger.error(e)

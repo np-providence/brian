@@ -12,7 +12,7 @@ db = SQLAlchemy()
 
 def gen_hash():
     today = datetime.now()
-    return abs(hash(today))
+    return str(abs(hash(today)))
 
 
 def send_email(subject, msg):

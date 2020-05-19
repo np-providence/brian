@@ -14,14 +14,15 @@ import os
 from middleware.auth import admin_required
 from face import find_faces, identify_faces
 from config import ConfigClass
-from model.student import add_student
+from model.student import add_student, get_students, get_years, get_courses
 from model.feature import add_feature, get_all_features, FeatureSchema
 from model.user import get_user, UserSchema, authenticate_user, User
-from model.event import add_event, get_event, EventSchema
+from model.event import add_event, get_event, get_all_event, EventSchema
 from model.location import LocationSchema, get_all_location
+from model.attendance import get_attendance_for_event, add_attendance
 from common.common import gen_hash, db
 from common.image import decode_image
-from common.seed import seed_users, seed_courses, seed_years, seed_eventowner_with_events
+from common.seed import seed_all
 
 app = Flask(__name__)
 app.config.from_object(__name__ + '.ConfigClass')
@@ -36,15 +37,12 @@ db.create_all(app=app)
 @app.cli.command("seed")
 def seed():
     print('SEED: Seeding DB...')
-    seed_years()
-    seed_courses()
-    seed_users()
-    seed_eventowner_with_events()
+    seed_all()
 
 @app.route("/api/identify", methods=['POST'])
 def identify_post():
     data = request.get_json()
-    return jsonify(faces=identify_faces(data['faces'])), 200
+    return jsonify(faces=identify_faces(data['faces'], data['location_id'])), 200
 
 @app.route("/api/features", methods=['GET'])
 def features_get():
@@ -58,14 +56,15 @@ def features_get():
     return 'Features not found', 400
 
 @app.route("/api/features", methods=['POST'])	
+@admin_required
 def features_post():	
     data = request.get_json()	
     face_encodings, number_of_faces = find_faces(data['image'])	
     return jsonify(numberOfFaces=number_of_faces)	
 
-
 # Enrols a new student user
 @app.route("/api/enrol", methods=['POST'])
+@admin_required
 def enrol_post():
     data = request.get_json()
     # TODO: Check if student exists (via email)
@@ -75,6 +74,8 @@ def enrol_post():
             'name': data['name'],
             'email': data['email'],
             'password': 'password',
+            'year_id': data['yearID'],
+            'course_id': data['courseID'],
             }
     student_id = add_student(student_data)
     for image in data['images']:
@@ -91,6 +92,21 @@ def enrol_post():
             return 'Failed to enrol', 500 
     return 'Enroled', 200 
 
+@app.route('/api/year', methods=['GET'])
+def get_year():
+    years = get_years()
+    return jsonify(data=years)
+
+@app.route('/api/course', methods=['GET'])
+def get_course():
+    courses = get_courses()
+    return jsonify(data=courses)
+
+@app.route('/api/student', methods=['GET'])
+def get_student():
+    students = get_students()
+    return jsonify(data=students) 
+
 
 @app.route("/api/event/new", methods=['POST'])
 def event_post():
@@ -102,7 +118,6 @@ def event_post():
 
 
 @app.route("/api/event", methods=['GET'])
-#@admin_required
 def event_get():
     event_schemas = EventSchema(many=True)
     event_schema = EventSchema()
@@ -116,6 +131,11 @@ def event_get():
 
     return 'Event not found', 400
 
+@app.route("/api/attendance", methods=['GET'])
+def attendance_get():
+    event_id = request.args.get('event')
+    attendance_records = get_attendance_for_event(event_id)
+    return jsonify(data=attendance_records)
 
 @app.route("/api/event/all", methods=['GET'])
 def event_get_all():
@@ -135,12 +155,9 @@ def location_get_all():
         return jsonify(result), 200
     return 'location not found', 400
 
-
 # User
-
 @app.route("/user/login", methods=['GET'])
 def login():
     email = request.args.get('email')
     password = request.args.get('password')
-    logger.info(email)
     return authenticate_user(email, password)
